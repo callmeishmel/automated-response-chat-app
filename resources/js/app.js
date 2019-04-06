@@ -9,6 +9,8 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+Vue.use(require('vue-moment'));
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -44,6 +46,7 @@ const app = new Vue({
         .listen('MessageSent', (e) => {
             this.messages.push({
                 message: e.message.message,
+                created_at: e.message.created_at,
                 user: e.user
             });
         });
@@ -57,6 +60,7 @@ const app = new Vue({
         },
 
         addMessage(message) {
+            message.created_at = Vue.moment.now();
             this.messages.push(message);
 
             axios.post('/messages', message).then(response => {
