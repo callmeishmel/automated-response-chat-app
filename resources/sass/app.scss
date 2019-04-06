@@ -1,0 +1,47 @@
+
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+body,html {
+  overflow: hidden !important;
+}
+
+#app {
+  height: 100vh;
+}
+
+#chat-main-container {
+  height: 100vh;
+}
+
+#chat-panel-wrapper {
+  height: inherit;
+}
+
+.navbar-laravel {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.chat-sidebar {
+  background: #3F0E40;
+  color: rgb(178,159,179);
+}
+
+.chat-content {
+  max-height: 100vh;
+}
+
+.chat-messages {
+  overflow-y: scroll;
+}
+
+.chat-message-form {
+    background: #b29fb3 !important;
+}
