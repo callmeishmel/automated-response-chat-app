@@ -11,6 +11,7 @@
 
     <div class="chat-messages h-75">
       <chat-messages
+        v-on:messagesent="addMessage"
         :messages="messages"
         :user="{{ Auth::user() }}"
       ></chat-messages>
@@ -20,6 +21,7 @@
       <chat-form
           v-on:messagesent="addMessage"
           :user="{{ Auth::user() }}"
+          :canned-messages="{{ $cannedMessages }}"
       ></chat-form>
     </div>
 

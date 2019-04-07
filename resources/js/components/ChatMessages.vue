@@ -3,16 +3,31 @@
         <li
           class="p-3"
           :class="{ 'text-right' : message.user.id !== user.id}"
-          v-for="message in messages">
+          v-for="(message,index) in messages">
             <div class="chat-body">
                 <div class="header">
                     <strong class="primary-font">
-                        {{ message.user.name }} <small>{{ message.created_at | moment("ddd, MMM Do h:ma") }}</small>
+                        {{ message.user.name }} <small>{{ message.created_at | moment("ddd, MMM Do h:mma") }}</small>
                     </strong>
                 </div>
                 <p>
                     {{ message.message }}
                 </p>
+
+                <div v-if="message.replied">
+                  <h1>this has been replied</h1>
+                </div>
+                <div v-else>
+                    <div v-if="message.user.id !== user.id && message.canned_message_responses !== ''">
+                        <div
+                            class="btn btn-sm btn-primary ml-1"
+                            @click="sendMessage(index, response, message.id)"
+                            v-for="response in JSON.parse(message.canned_message_responses)">
+                            {{ response }}
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </li>
     </ul>
@@ -40,7 +55,14 @@
     },
 
     methods: {
-      
+        sendMessage(messageIndex, response, messageId) {
+            this.messages[messageIndex].replied = 1;
+            this.$emit('messagesent', {
+                user: this.user,
+                message: response,
+                parent_message_id: messageId
+            });
+        }
     },
 
   };

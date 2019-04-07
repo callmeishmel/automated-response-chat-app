@@ -17,6 +17,9 @@ class CreateMessagesTable extends Migration
           $table->increments('id');
           $table->integer('user_id')->unsigned();
           $table->text('message');
+          $table->text('parent_message_id')->nullable();
+          $table->integer('canned_message_id')->nullable();
+          $table->boolean('replied')->default(false);
           $table->timestamps();
         });
     }

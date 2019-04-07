@@ -44,10 +44,15 @@ const app = new Vue({
 
         Echo.private('chat')
         .listen('MessageSent', (e) => {
-            this.messages.push({
-                message: e.message.message,
-                created_at: e.message.created_at,
-                user: e.user
+            axios.get('/canned-message-responses/' + e.message.canned_message_id).
+            then(response => {
+                this.messages.push({
+                    user: e.user,
+                    message: e.message.message,
+                    created_at: e.message.created_at,
+                    canned_message_id: e.message.canned_message_id,
+                    canned_message_responses: response.data
+                });
             });
         });
     },

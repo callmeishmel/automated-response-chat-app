@@ -1775,20 +1775,94 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['user'],
+  props: ['user', 'cannedMessages'],
   data: function data() {
     return {
-      newMessage: ''
+      newMessage: '',
+      isCannedMessage: true,
+      selectedCannedMessage: null,
+      selectedCannedMessageOption: null
     };
+  },
+  watch: {
+    'selectedCannedMessageOption': {
+      handler: function handler(selectOption) {
+        if (this.selectedCannedMessageOption !== null) {
+          this.newMessage = this.cannedMessages[selectOption].message;
+          this.selectedCannedMessage = this.cannedMessages[selectOption];
+        } else {
+          this.newMessage = '';
+          this.selectedCannedMessage = null;
+        }
+      }
+    }
   },
   methods: {
     sendMessage: function sendMessage() {
+      var cannedMessageId = this.selectedCannedMessage !== null ? this.selectedCannedMessage.id : null;
+      var cannedMessageResponses = this.selectedCannedMessage !== null ? this.selectedCannedMessage.possible_responses : null;
       this.$emit('messagesent', {
         user: this.user,
-        message: this.newMessage
+        message: this.newMessage,
+        canned_message_id: cannedMessageId,
+        canned_message_responses: cannedMessageResponses
       });
+      this.selectedCannedMessageOption = null;
       this.newMessage = '';
+    },
+    changeMessageType: function changeMessageType() {
+      this.newMessage = '';
+      this.selectedCannedMessageOption = null;
+      this.isCannedMessage = !this.isCannedMessage;
     }
   }
 });
@@ -1824,6 +1898,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['messages', 'user'],
   data: function data() {
@@ -1838,7 +1927,16 @@ __webpack_require__.r(__webpack_exports__);
       }
     }
   },
-  methods: {}
+  methods: {
+    sendMessage: function sendMessage(messageIndex, response, messageId) {
+      this.messages[messageIndex].replied = 1;
+      this.$emit('messagesent', {
+        user: this.user,
+        message: response,
+        parent_message_id: messageId
+      });
+    }
+  }
 });
 
 /***/ }),
@@ -47090,54 +47188,166 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "input-group" }, [
-    _c("input", {
-      directives: [
-        {
-          name: "model",
-          rawName: "v-model",
-          value: _vm.newMessage,
-          expression: "newMessage"
-        }
-      ],
-      staticClass: "form-control input-sm",
-      attrs: {
-        id: "btn-input",
-        type: "text",
-        name: "message",
-        placeholder: "Type your message here..."
-      },
-      domProps: { value: _vm.newMessage },
-      on: {
-        keyup: function($event) {
-          if (
-            !$event.type.indexOf("key") &&
-            _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-          ) {
-            return null
-          }
-          return _vm.sendMessage($event)
-        },
-        input: function($event) {
-          if ($event.target.composing) {
-            return
-          }
-          _vm.newMessage = $event.target.value
-        }
-      }
-    }),
+  return _c("div", [
+    _vm.isCannedMessage
+      ? _c("div", { staticClass: "input-group" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.selectedCannedMessageOption,
+                  expression: "selectedCannedMessageOption"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { name: "message" },
+              on: {
+                keyup: function($event) {
+                  if (
+                    !$event.type.indexOf("key") &&
+                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                  ) {
+                    return null
+                  }
+                  return _vm.sendMessage($event)
+                },
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.selectedCannedMessageOption = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            _vm._l(_vm.cannedMessages, function(message, index) {
+              return _c("option", { domProps: { value: index } }, [
+                _vm._v(_vm._s(message.message))
+              ])
+            }),
+            0
+          ),
+          _vm._v(" "),
+          _c("span", { staticClass: "input-group-btn" }, [
+            _c(
+              "button",
+              {
+                staticClass: "ml-1 btn btn-primary",
+                attrs: { id: "btn-chat" },
+                on: { click: _vm.sendMessage }
+              },
+              [_vm._v("\n              Send\n          ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "ml-1 btn btn-success",
+                attrs: { id: "btn-chat" },
+                on: {
+                  click: function($event) {
+                    return _vm.changeMessageType()
+                  }
+                }
+              },
+              [_vm._v("\n              Regular Message\n          ")]
+            )
+          ])
+        ])
+      : _c("div", { staticClass: "input-group" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.newMessage,
+                expression: "newMessage"
+              }
+            ],
+            staticClass: "form-control input-sm",
+            attrs: {
+              id: "btn-input",
+              type: "text",
+              name: "message",
+              placeholder: "Type your message here..."
+            },
+            domProps: { value: _vm.newMessage },
+            on: {
+              keyup: function($event) {
+                if (
+                  !$event.type.indexOf("key") &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.sendMessage($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.newMessage = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("span", { staticClass: "input-group-btn" }, [
+            _c(
+              "button",
+              {
+                staticClass: "ml-1 btn btn-primary",
+                attrs: { id: "btn-chat" },
+                on: { click: _vm.sendMessage }
+              },
+              [_vm._v("\n              Send\n          ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "ml-1 btn btn-warning",
+                attrs: { id: "btn-chat" },
+                on: {
+                  click: function($event) {
+                    _vm.isCannedMessage = !_vm.isCannedMessage
+                  }
+                }
+              },
+              [_vm._v("\n              Canned Response\n          ")]
+            )
+          ])
+        ]),
     _vm._v(" "),
-    _c("span", { staticClass: "input-group-btn" }, [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-primary btn-sm",
-          attrs: { id: "btn-chat" },
-          on: { click: _vm.sendMessage }
-        },
-        [_vm._v("\n            Send\n        ")]
-      )
-    ])
+    _vm.selectedCannedMessage !== null
+      ? _c(
+          "div",
+          { staticClass: "col-md-12 p-3 text-light" },
+          [
+            _c("label", { staticClass: "h5" }, [_vm._v("Possible Responses")]),
+            _vm._v(" "),
+            _vm._l(
+              JSON.parse(_vm.selectedCannedMessage.possible_responses),
+              function(response) {
+                return _c(
+                  "span",
+                  { staticClass: "p-2 ml-2 border border-light rounded" },
+                  [_vm._v("\n        " + _vm._s(response) + "\n      ")]
+                )
+              }
+            )
+          ],
+          2
+        )
+      : _vm._e()
   ])
 }
 var staticRenderFns = []
@@ -47165,7 +47375,7 @@ var render = function() {
   return _c(
     "ul",
     { staticClass: "chat" },
-    _vm._l(_vm.messages, function(message) {
+    _vm._l(_vm.messages, function(message, index) {
       return _c(
         "li",
         {
@@ -47182,7 +47392,7 @@ var render = function() {
                 _c("small", [
                   _vm._v(
                     _vm._s(
-                      _vm._f("moment")(message.created_at, "ddd, MMM Do h:ma")
+                      _vm._f("moment")(message.created_at, "ddd, MMM Do h:mma")
                     )
                   )
                 ])
@@ -47195,7 +47405,46 @@ var render = function() {
                   _vm._s(message.message) +
                   "\n            "
               )
-            ])
+            ]),
+            _vm._v(" "),
+            message.replied
+              ? _c("div", [_c("h1", [_vm._v("this has been replied")])])
+              : _c("div", [
+                  message.user.id !== _vm.user.id &&
+                  message.canned_message_responses !== ""
+                    ? _c(
+                        "div",
+                        _vm._l(
+                          JSON.parse(message.canned_message_responses),
+                          function(response) {
+                            return _c(
+                              "div",
+                              {
+                                staticClass: "btn btn-sm btn-primary ml-1",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.sendMessage(
+                                      index,
+                                      response,
+                                      message.id
+                                    )
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                        " +
+                                    _vm._s(response) +
+                                    "\n                    "
+                                )
+                              ]
+                            )
+                          }
+                        ),
+                        0
+                      )
+                    : _vm._e()
+                ])
           ])
         ]
       )
@@ -64153,10 +64402,14 @@ var app = new Vue({
 
     this.fetchMessages();
     Echo["private"]('chat').listen('MessageSent', function (e) {
-      _this.messages.push({
-        message: e.message.message,
-        created_at: e.message.created_at,
-        user: e.user
+      axios.get('/canned-message-responses/' + e.message.canned_message_id).then(function (response) {
+        _this.messages.push({
+          user: e.user,
+          message: e.message.message,
+          created_at: e.message.created_at,
+          canned_message_id: e.message.canned_message_id,
+          canned_message_responses: response.data
+        });
       });
     });
   },
