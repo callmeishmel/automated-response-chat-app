@@ -1,6 +1,9 @@
 <template>
 
   <div>
+
+      <button class="btn btn-sm btn-primary rounded-0" @click.prevent="hideNavbar">Toggle Navbar</button>
+
       <div v-if="currentContact !== null">
           <ul class="chat">
               <li
@@ -81,6 +84,10 @@
                 parent_message_id: messageId,
                 recipient_id: this.currentContact
             });
+        },
+
+        hideNavbar() {
+          $(".navbar-laravel").toggle();
         }
     },
 

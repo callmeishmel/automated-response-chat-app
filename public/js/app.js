@@ -2012,6 +2012,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['messages', 'user'],
@@ -2037,6 +2040,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         parent_message_id: messageId,
         recipient_id: this.currentContact
       });
+    },
+    hideNavbar: function hideNavbar() {
+      $(".navbar-laravel").toggle();
     }
   }
 });
@@ -48034,19 +48040,21 @@ var render = function() {
                   [_vm._v("\n              Send\n          ")]
                 ),
                 _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "ml-1 btn btn-success",
-                    attrs: { id: "btn-chat" },
-                    on: {
-                      click: function($event) {
-                        return _vm.changeMessageType()
-                      }
-                    }
-                  },
-                  [_vm._v("\n              Regular Message\n          ")]
-                )
+                _vm.user.position !== "RM"
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "ml-1 btn btn-success",
+                        attrs: { id: "btn-chat" },
+                        on: {
+                          click: function($event) {
+                            return _vm.changeMessageType()
+                          }
+                        }
+                      },
+                      [_vm._v("\n              Regular Message\n          ")]
+                    )
+                  : _vm._e()
               ])
             ])
           : _c("div", { staticClass: "input-group" }, [
@@ -48162,6 +48170,20 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
+    _c(
+      "button",
+      {
+        staticClass: "btn btn-sm btn-primary rounded-0",
+        on: {
+          click: function($event) {
+            $event.preventDefault()
+            return _vm.hideNavbar($event)
+          }
+        }
+      },
+      [_vm._v("Toggle Navbar")]
+    ),
+    _vm._v(" "),
     _vm.currentContact !== null
       ? _c("div", [
           _c(
@@ -66682,8 +66704,8 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /var/www/html/ccl/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /var/www/html/ccl/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /var/www/html/chat/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /var/www/html/chat/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

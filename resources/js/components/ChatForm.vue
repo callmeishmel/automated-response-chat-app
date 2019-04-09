@@ -17,7 +17,7 @@
                   Send
               </button>
 
-              <button class="ml-1 btn btn-success" id="btn-chat" @click="changeMessageType()">
+              <button v-if="user.position !== 'RM'" class="ml-1 btn btn-success" id="btn-chat" @click="changeMessageType()">
                   Regular Message
               </button>
           </span>

@@ -23,3 +23,7 @@ Route::get('add-contact-notification/{contactId}', 'ChatsController@addContactNo
 Route::get('remove-contact-notification/{contactId}', 'ChatsController@removeContactNotification');
 
 Route::get('canned-message-responses/{id?}', 'ChatsController@getCannedMessageResponses');
+
+Route::get('admin', 'AdminController@index');
+Route::get('create-user', 'AdminController@createUser');
+Route::get('create-canned-reponse', 'AdminController@createCannedResponse');
