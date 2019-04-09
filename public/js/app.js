@@ -1784,16 +1784,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['user'],
+  props: ['user', 'contactNotificationsProp'],
   data: function data() {
     return {
       contacts: null
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact'])),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('chatStore', ['setNewContactInStore']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'contactNotifications'])),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('chatStore', ['setNewContactInStore', 'removeFromContactNotifications']), {
     getUserContacts: function getUserContacts() {
       var _this = this;
 
@@ -1803,10 +1806,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     setNewContact: function setNewContact(contactId) {
       this.setNewContactInStore(contactId);
+      this.removeFromContactNotifications(contactId);
+      axios.get('remove-contact-notification/' + contactId).then(function () {});
     }
   }),
   mounted: function mounted() {
     this.getUserContacts();
+
+    for (var i = 0; i < this.contactNotificationsProp.length; i++) {
+      this.contactNotifications.push(this.contactNotificationsProp[i].contact_id);
+    }
   }
 });
 
@@ -6481,7 +6490,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.contact-link {\n}\n.contact-link:hover {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n  cursor: pointer;\n}\n.contact-link-active {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n}\n", ""]);
+exports.push([module.i, "\n.contact-link {\n}\n.contact-link:hover {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n  cursor: pointer;\n}\n.contact-link-active {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n}\n.contact-notification-active {\n  background-color: yellow !important;\n}\n", ""]);
 
 // exports
 
@@ -47894,8 +47903,13 @@ var render = function() {
           "div",
           {
             staticClass: "pl-1 contact-link",
-            class:
+            class: [
               _vm.currentContact === contact.id ? "contact-link-active" : "",
+              _vm.contactNotifications.includes(contact.id) &&
+              _vm.currentContact !== contact.id
+                ? "contact-notification-active"
+                : ""
+            ],
             on: {
               click: function($event) {
                 return _vm.setNewContact(contact.id)
@@ -66173,10 +66187,16 @@ var app = new Vue({
     this.getCurrentAppUser();
     this.fetchMessages(vm.contactId);
     Echo["private"]('chat').listen('MessageSent', function (e) {
-      // The following condition is messy and heavy but necessary in order
+      // Light up the user's name on the recipients client contact list
+      if (vm.currentAppUser === e.message.recipient_id && !vm.contactNotifications.includes(e.message.user_id)) {
+        _vuex_store_js__WEBPACK_IMPORTED_MODULE_1__["default"].commit('chatStore/addToContactNotifications', e.message.user_id);
+        axios.get('add-contact-notification/' + e.message.user_id).then(function (response) {});
+      } // The following condition is messy and heavy but necessary in order
       // To keep conversations between two users without running the temp
       // message update to all customers listening to the 'chat' channel
       // NOTE chat channel is in app/Events/MessageSent.php
+
+
       if (vm.currentAppUser === e.message.recipient_id && vm.currentContact === e.message.user_id) {
         axios.get('/canned-message-responses/' + e.message.canned_message_id).then(function (response) {
           _this.messages.push({
@@ -66194,6 +66214,9 @@ var app = new Vue({
   computed: {
     currentContact: function currentContact() {
       return _vuex_store_js__WEBPACK_IMPORTED_MODULE_1__["default"].state.chatStore.currentContact;
+    },
+    contactNotifications: function contactNotifications() {
+      return _vuex_store_js__WEBPACK_IMPORTED_MODULE_1__["default"].state.chatStore.contactNotifications;
     }
   },
   watch: {
@@ -66542,6 +66565,15 @@ __webpack_require__.r(__webpack_exports__);
 var mutations = {
   setNewContactInStore: function setNewContactInStore(state, payload) {
     state.currentContact = payload;
+  },
+  addToContactNotifications: function addToContactNotifications(state, payload) {
+    if (state.currentContact !== payload && !state.contactNotifications.includes(payload)) {
+      state.contactNotifications.push(payload);
+    }
+  },
+  removeFromContactNotifications: function removeFromContactNotifications(state, payload) {
+    var contactIndex = state.contactNotifications.indexOf(payload);
+    state.contactNotifications.splice(contactIndex, 1);
   }
 };
 /* harmony default export */ __webpack_exports__["default"] = (mutations);
@@ -66562,7 +66594,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var state = {
-  currentContact: null
+  currentContact: null,
+  contactNotifications: []
 };
 var getters = {};
 var module = {

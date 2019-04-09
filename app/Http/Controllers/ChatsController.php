@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Message;
 use App\CannedMessage;
+use App\ContactNotification;
 use App\Events\MessageSent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,9 +25,9 @@ class ChatsController extends Controller
   */
   public function index()
   {
-
     $cannedMessages = CannedMessage::all();
-    return view('chat', compact('cannedMessages'));
+    $contactNotifications = ContactNotification::select('contact_id')->where('customer_id', '=', Auth::user()->id)->get();
+    return view('chat', compact(['cannedMessages', 'contactNotifications']));
   }
 
   /**
@@ -129,4 +130,41 @@ class ChatsController extends Controller
 
     return $userContacts;
   }
+
+  /**
+  * Add contact to the contact_notifications table
+  *
+  * @param  int $id
+  * @return json
+  */
+  public function addContactNotification($contactId)
+  {
+    $user = Auth::user();
+
+    $contactNotification = ContactNotification::create([
+      'customer_id' => $user->id,
+      'contact_id' => $contactId
+    ]);
+
+    return $contactNotification;
+  }
+
+  /**
+  * Remove contact to the contact_notifications table
+  *
+  * @param  int $id
+  * @return json
+  */
+  public function removeContactNotification($contactId)
+  {
+    $user = Auth::user();
+
+    $contactNotification = ContactNotification::where([
+      'customer_id' => $user->id,
+      'contact_id' => $contactId
+    ])->delete();
+
+    return $contactNotification;
+  }
+
 }

@@ -19,5 +19,7 @@ Route::post('messages', 'ChatsController@sendMessage');
 
 Route::get('current-app-user', 'ChatsController@getCurrentAppUser');
 Route::get('user-contacts', 'ChatsController@getUserContacts');
+Route::get('add-contact-notification/{contactId}', 'ChatsController@addContactNotification');
+Route::get('remove-contact-notification/{contactId}', 'ChatsController@removeContactNotification');
 
 Route::get('canned-message-responses/{id?}', 'ChatsController@getCannedMessageResponses');

@@ -6,6 +6,7 @@
   <div class="col-md-2 chat-sidebar">
     <chat-contacts
       :user="{{ Auth::user() }}"
+      :contact-notifications-prop="{{ $contactNotifications }}"
     ></chat-contacts>
   </div>
 

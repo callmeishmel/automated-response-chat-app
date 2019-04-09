@@ -2,7 +2,8 @@ import actions from './actions.js';
 import mutations from './mutations.js';
 
 const state = {
-  currentContact: null
+  currentContact: null,
+  contactNotifications: []
 };
 
 const getters = {
