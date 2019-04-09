@@ -57,10 +57,15 @@ const app = new Vue({
         .listen('MessageSent', (e) => {
 
             // Light up the user's name on the recipients client contact list
-            if(vm.currentAppUser === e.message.recipient_id && !vm.contactNotifications.includes(e.message.user_id)) {
-              store.commit('chatStore/addToContactNotifications', e.message.user_id);
+            if(vm.currentAppUser === e.message.recipient_id && !vm.contactNotifications.includes(e.user.id) && vm.currentContact !== e.user.id) {
 
-              axios.get('add-contact-notification/' + e.message.user_id).then(response => {});
+                // Play sound and add to notifications upon receiving message if
+                // currentAppUser is not actively selecting sender
+                axios.get('add-contact-notification/' + e.message.user_id).then(response => {
+                  vm.playSound('/sounds/appointed.mp3');
+                  store.commit('chatStore/addToContactNotifications', e.message.user_id);
+                });
+
             }
 
             // The following condition is messy and heavy but necessary in order
@@ -80,6 +85,7 @@ const app = new Vue({
                 });
               });
             }
+
         });
     },
 
@@ -119,6 +125,13 @@ const app = new Vue({
             axios.post('/messages', message).then(response => {
               console.log(response.data);
             });
+        },
+
+        playSound (sound) {
+          if(sound) {
+            var audio = new Audio(sound);
+            audio.play();
+          }
         },
 
     }

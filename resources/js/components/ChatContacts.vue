@@ -7,11 +7,17 @@
       class="pl-1 contact-link"
       :class="[
         currentContact === contact.id ? 'contact-link-active': '',
-        contactNotifications.includes(contact.id) && currentContact !== contact.id ? 'contact-notification-active' : ''
+        contactNotifications.includes(contact.id) && currentContact !== contact.id ? 'contact-blink' : ''
       ]"
       @click="setNewContact(contact.id)"
       v-for="contact in contacts">
-      <i class="far fa-circle"></i> {{ contact.name }} ({{ contact.position }})
+      <i
+        class="fa-circle"
+        :class="[
+          currentContact === contact.id ? 'fas': 'far',
+          contactNotifications.includes(contact.id) && currentContact !== contact.id ? 'fas' : 'far'
+        ]"
+        ></i> {{ contact.name }} ({{ contact.position }})
     </div>
 
   </div>
@@ -56,7 +62,9 @@ export default {
 
     setNewContact(contactId) {
       this.setNewContactInStore(contactId);
-      this.removeFromContactNotifications(contactId);
+      if(this.contactNotifications.includes(contactId)) {
+        this.removeFromContactNotifications(contactId);
+      }
 
       axios.get('remove-contact-notification/' + contactId).then(() => {});
     }
@@ -90,7 +98,21 @@ export default {
     color: #d9d9d9;
   }
 
-  .contact-notification-active {
-    background-color: yellow !important;
+  /* Contact notification animation */
+
+  .contact-blink {
+   -webkit-animation: CONTACT-BLINK 1s infinite; /* Safari 4+ */
+    -moz-animation:    CONTACT-BLINK 1s infinite; /* Fx 5+ */
+    -o-animation:      CONTACT-BLINK 1s infinite; /* Opera 12+ */
+    animation:         CONTACT-BLINK 1s infinite; /* IE 10+, Fx 29+ */
+  }
+
+  @-webkit-keyframes CONTACT-BLINK {
+    0%, 49% {
+        background-color: rgba(255,0,0,.3);
+    }
+    50%, 100% {
+        background-color: rgba(255,0,0,.4);
+    }
   }
 </style>

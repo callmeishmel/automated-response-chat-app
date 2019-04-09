@@ -1787,6 +1787,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['user', 'contactNotificationsProp'],
@@ -1806,7 +1812,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     setNewContact: function setNewContact(contactId) {
       this.setNewContactInStore(contactId);
-      this.removeFromContactNotifications(contactId);
+
+      if (this.contactNotifications.includes(contactId)) {
+        this.removeFromContactNotifications(contactId);
+      }
+
       axios.get('remove-contact-notification/' + contactId).then(function () {});
     }
   }),
@@ -6490,7 +6500,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.contact-link {\n}\n.contact-link:hover {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n  cursor: pointer;\n}\n.contact-link-active {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n}\n.contact-notification-active {\n  background-color: yellow !important;\n}\n", ""]);
+exports.push([module.i, "\n.contact-link {\n}\n.contact-link:hover {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n  cursor: pointer;\n}\n.contact-link-active {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n}\n\n/* Contact notification animation */\n.contact-blink {\n -webkit-animation: CONTACT-BLINK 1s infinite; /* Safari 4+ */ /* Fx 5+ */ /* Opera 12+ */\n  animation:         CONTACT-BLINK 1s infinite; /* IE 10+, Fx 29+ */\n}\n@-webkit-keyframes CONTACT-BLINK {\n0%, 49% {\n      background-color: rgba(255,0,0,.3);\n}\n50%, 100% {\n      background-color: rgba(255,0,0,.4);\n}\n}\n", ""]);
 
 // exports
 
@@ -47907,7 +47917,7 @@ var render = function() {
               _vm.currentContact === contact.id ? "contact-link-active" : "",
               _vm.contactNotifications.includes(contact.id) &&
               _vm.currentContact !== contact.id
-                ? "contact-notification-active"
+                ? "contact-blink"
                 : ""
             ],
             on: {
@@ -47917,7 +47927,16 @@ var render = function() {
             }
           },
           [
-            _c("i", { staticClass: "far fa-circle" }),
+            _c("i", {
+              staticClass: "fa-circle",
+              class: [
+                _vm.currentContact === contact.id ? "fas" : "far",
+                _vm.contactNotifications.includes(contact.id) &&
+                _vm.currentContact !== contact.id
+                  ? "fas"
+                  : "far"
+              ]
+            }),
             _vm._v(
               " " +
                 _vm._s(contact.name) +
@@ -66188,9 +66207,13 @@ var app = new Vue({
     this.fetchMessages(vm.contactId);
     Echo["private"]('chat').listen('MessageSent', function (e) {
       // Light up the user's name on the recipients client contact list
-      if (vm.currentAppUser === e.message.recipient_id && !vm.contactNotifications.includes(e.message.user_id)) {
-        _vuex_store_js__WEBPACK_IMPORTED_MODULE_1__["default"].commit('chatStore/addToContactNotifications', e.message.user_id);
-        axios.get('add-contact-notification/' + e.message.user_id).then(function (response) {});
+      if (vm.currentAppUser === e.message.recipient_id && !vm.contactNotifications.includes(e.user.id) && vm.currentContact !== e.user.id) {
+        // Play sound and add to notifications upon receiving message if
+        // currentAppUser is not actively selecting sender
+        axios.get('add-contact-notification/' + e.message.user_id).then(function (response) {
+          vm.playSound('/sounds/appointed.mp3');
+          _vuex_store_js__WEBPACK_IMPORTED_MODULE_1__["default"].commit('chatStore/addToContactNotifications', e.message.user_id);
+        });
       } // The following condition is messy and heavy but necessary in order
       // To keep conversations between two users without running the temp
       // message update to all customers listening to the 'chat' channel
@@ -66245,6 +66268,12 @@ var app = new Vue({
       axios.post('/messages', message).then(function (response) {
         console.log(response.data);
       });
+    },
+    playSound: function playSound(sound) {
+      if (sound) {
+        var audio = new Audio(sound);
+        audio.play();
+      }
     }
   }
 });
