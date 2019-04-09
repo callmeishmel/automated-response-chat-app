@@ -1,39 +1,50 @@
 <template>
-    <ul class="chat">
-        <li
-          class="p-3"
-          :class="{ 'text-right' : message.user.id !== user.id}"
-          v-for="(message,index) in messages">
-            <div class="chat-body">
-                <div class="header">
-                    <strong class="primary-font">
-                        {{ message.user.name }} <small>{{ message.created_at | moment("ddd, MMM Do h:mma") }}</small>
-                    </strong>
-                </div>
-                <p>
-                    {{ message.message }}
-                </p>
 
-                <div v-if="message.replied">
-                  <h1>this has been replied</h1>
-                </div>
-                <div v-else>
-                    <div v-if="message.user.id !== user.id && message.canned_message_responses !== ''">
-                        <div
-                            class="btn btn-sm btn-primary ml-1"
-                            @click="sendMessage(index, response, message.id)"
-                            v-for="response in JSON.parse(message.canned_message_responses)">
-                            {{ response }}
-                        </div>
-                    </div>
-                </div>
+  <div>
+      <div v-if="currentContact !== null">
+          <ul class="chat">
+              <li
+                class="p-3"
+                :class="{ 'text-right' : message.user.id !== user.id}"
+                v-for="(message,index) in messages">
+                  <div class="chat-body">
+                      <div class="header">
+                          <strong class="primary-font">
+                              {{ message.user.name }} <small>{{ message.created_at | moment("ddd, MMM Do h:mma") }}</small>
+                              <span v-if="message.replied">
+                                <i class="fas fa-comment-dots text-info" style="font-size: 1.18rem;"></i>
+                              </span>
+                          </strong>
+                      </div>
+                      <p>
+                          {{ message.message }}
+                      </p>
 
-            </div>
-        </li>
-    </ul>
+                      <div v-if="!message.replied">
+                          <div v-if="message.user.id !== user.id && message.canned_message_responses !== ''">
+                              <div
+                                  class="btn btn-sm btn-primary ml-1"
+                                  @click="sendMessage(index, response, message.id)"
+                                  v-for="response in JSON.parse(message.canned_message_responses)">
+                                  {{ response }}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </li>
+          </ul>
+      </div>
+      <div v-else class="h3 text-center mt-5" style="font-size: 2.5em; color: rgba(0,0,0,.3);">
+        Select a contact to begin chatting
+      </div>
+  </div>
+
 </template>
 
 <script>
+
+  import {mapState, mapMutations, mapActions, mapGetters} from 'vuex';
 
   export default {
     props: ['messages', 'user'],
@@ -54,16 +65,28 @@
       }
     },
 
+    computed: {
+      ...mapState('chatStore',
+      [
+        'currentContact'
+      ]),
+    },
+
     methods: {
         sendMessage(messageIndex, response, messageId) {
             this.messages[messageIndex].replied = 1;
             this.$emit('messagesent', {
                 user: this.user,
                 message: response,
-                parent_message_id: messageId
+                parent_message_id: messageId,
+                recipient_id: this.currentContact
             });
         }
     },
 
   };
 </script>
+
+<style lang="css">
+
+</style>

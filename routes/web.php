@@ -14,7 +14,10 @@
 Auth::routes();
 
 Route::get('/', 'ChatsController@index');
-Route::get('messages', 'ChatsController@fetchMessages');
+Route::get('messages/{contactId?}', 'ChatsController@fetchMessages');
 Route::post('messages', 'ChatsController@sendMessage');
+
+Route::get('current-app-user', 'ChatsController@getCurrentAppUser');
+Route::get('user-contacts', 'ChatsController@getUserContacts');
 
 Route::get('canned-message-responses/{id?}', 'ChatsController@getCannedMessageResponses');

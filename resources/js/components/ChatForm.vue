@@ -1,6 +1,6 @@
 <template>
 
-    <div>
+    <div v-if="currentContact !== null">
 
       <div class="input-group" v-if="isCannedMessage">
 
@@ -59,6 +59,9 @@
 </template>
 
 <script>
+
+    import {mapState, mapMutations, mapActions, mapGetters} from 'vuex';
+
     export default {
         props: ['user', 'cannedMessages'],
 
@@ -69,6 +72,13 @@
                 selectedCannedMessage: null,
                 selectedCannedMessageOption: null
             }
+        },
+
+        computed: {
+          ...mapState('chatStore',
+          [
+            'currentContact'
+          ]),
         },
 
         watch: {
@@ -87,13 +97,13 @@
 
         methods: {
             sendMessage() {
-
                 var cannedMessageId = this.selectedCannedMessage !== null ? this.selectedCannedMessage.id : null;
                 var cannedMessageResponses = this.selectedCannedMessage !== null ? this.selectedCannedMessage.possible_responses : null;
 
                 this.$emit('messagesent', {
                     user: this.user,
                     message: this.newMessage,
+                    recipient_id: this.currentContact,
                     canned_message_id: cannedMessageId,
                     canned_message_responses: cannedMessageResponses
                 });
@@ -112,6 +122,6 @@
     }
 </script>
 
-<style>
+<style lang="css">
 
 </style>

@@ -9,7 +9,13 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+// Moment.js
 Vue.use(require('vue-moment'));
+
+// Vuex stores
+import Vuex from 'vuex';
+import store from './vuex/store.js';
+Vue.use(Vuex);
 
 /**
  * The following block of code may be used to automatically register your
@@ -22,7 +28,7 @@ Vue.use(require('vue-moment'));
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('chat-contacts', require('./components/ChatContacts.vue').default);
 Vue.component('chat-messages', require('./components/ChatMessages.vue').default);
 Vue.component('chat-form', require('./components/ChatForm.vue').default);
 
@@ -34,33 +40,63 @@ Vue.component('chat-form', require('./components/ChatForm.vue').default);
 
 const app = new Vue({
     el: '#app',
-
+    store: store,
     data: {
+        // currentAppUser is who is accessing the site not sending the messages
+        currentAppUser: null,
+        contactId: null,
         messages: []
     },
 
     created() {
-        this.fetchMessages();
+        var vm = this;
+        this.getCurrentAppUser();
+        this.fetchMessages(vm.contactId);
 
         Echo.private('chat')
         .listen('MessageSent', (e) => {
-            axios.get('/canned-message-responses/' + e.message.canned_message_id).
-            then(response => {
+            // The following condition is messy and heavy but necessary in order
+            // To keep conversations between two users without running the temp
+            // message update to all customers listening to the 'chat' channel
+            // NOTE chat channel is in app/Events/MessageSent.php
+            if(vm.currentAppUser === e.message.recipient_id && vm.currentContact === e.message.user_id) {
+              axios.get('/canned-message-responses/' + e.message.canned_message_id).
+              then(response => {
                 this.messages.push({
-                    user: e.user,
-                    message: e.message.message,
-                    created_at: e.message.created_at,
-                    canned_message_id: e.message.canned_message_id,
-                    canned_message_responses: response.data
+                  user: e.user,
+                  message: e.message.message,
+                  recipient_id: e.message.recipient_id,
+                  created_at: e.message.created_at,
+                  canned_message_id: e.message.canned_message_id,
+                  canned_message_responses: response.data,
                 });
-            });
+              });
+            }
         });
     },
 
+    computed: {
+      currentContact() {
+        return store.state.chatStore.currentContact;
+      }
+    },
+
+    watch: {
+      currentContact (newValue, oldValue) {
+        this.fetchMessages(newValue);
+      }
+    },
+
     methods: {
-        fetchMessages() {
-            axios.get('/messages').then(response => {
+        fetchMessages(contactId) {
+            axios.get('/messages/' + contactId).then(response => {
                 this.messages = response.data;
+            });
+        },
+
+        getCurrentAppUser() {
+            axios.get('/current-app-user').then(response => {
+                this.currentAppUser = response.data;
             });
         },
 

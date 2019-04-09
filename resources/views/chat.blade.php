@@ -4,7 +4,9 @@
 
 <div id="chat-panel-wrapper" class="row">
   <div class="col-md-2 chat-sidebar">
-    Chat Sidebar
+    <chat-contacts
+      :user="{{ Auth::user() }}"
+    ></chat-contacts>
   </div>
 
   <div class="col-md-10 p-0 chat-content">
