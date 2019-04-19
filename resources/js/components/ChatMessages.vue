@@ -2,7 +2,32 @@
 
   <div>
 
-      <button class="btn btn-sm btn-primary rounded-0" @click.prevent="hideNavbar">Toggle Navbar</button>
+      <button class="btn btn-sm btn-warning rounded-0 toggle-contacts" @click.prevent="toggleContacts">
+        <i
+          class="fas fa-arrow-left"
+          :class="contactsHidden ? 'fa-arrow-right' : 'fa-arrow-left'"></i>
+      </button>
+
+      <button class="btn btn-sm btn-primary rounded-0" @click.prevent="toggleNavbar">
+        <i
+          class="fas"
+          :class="navbarHidden ? 'fa-arrow-down' : 'fa-arrow-up'"></i>
+      </button>
+
+      <div
+        v-if="contactNotifications.length > 0"
+        @click="toggleContacts"
+        style="cursor:pointer;"
+        class="p-1 ml-1 alert-danger h1 float-right contact-blink">
+        <i class="fas fa-comments"></i>
+      </div>
+
+      <div
+        v-if="currentContactName !== null"
+        style="background-color: #3F0E40;"
+        class="p-1 text-light float-right">
+        <i class="fas fa-comment-dots"></i> Chatting with {{ currentContactName }}
+      </div>
 
       <div v-if="currentContact !== null">
           <ul class="chat">
@@ -54,7 +79,8 @@
 
     data() {
       return {
-
+        navbarHidden: false,
+        contactsHidden: false,
       }
     },
 
@@ -71,7 +97,9 @@
     computed: {
       ...mapState('chatStore',
       [
-        'currentContact'
+        'currentContact',
+        'currentContactName',
+        'contactNotifications'
       ]),
     },
 
@@ -86,8 +114,21 @@
             });
         },
 
-        hideNavbar() {
+        toggleNavbar() {
+          this.navbarHidden = !this.navbarHidden;
           $(".navbar-laravel").toggle();
+        },
+
+        toggleContacts() {
+          this.contactsHidden = !this.contactsHidden;
+          $(".chat-sidebar").toggle();
+          if(this.contactsHidden) {
+            $(".chat-content").removeClass("col-8 col-md-10");
+            $(".chat-content").addClass("col-12");
+          } else {
+            $(".chat-content").removeClass("col-12");
+            $(".chat-content").addClass("col-8 col-md-10");
+          }
         }
     },
 

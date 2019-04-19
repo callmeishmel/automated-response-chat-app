@@ -9,7 +9,7 @@
         currentContact === contact.id ? 'contact-link-active': '',
         contactNotifications.includes(contact.id) && currentContact !== contact.id ? 'contact-blink' : ''
       ]"
-      @click="setNewContact(contact.id)"
+      @click="setNewContact({id:contact.id, name:contact.name})"
       v-for="contact in contacts">
       <i
         class="fa-circle"
@@ -17,7 +17,7 @@
           currentContact === contact.id ? 'fas': 'far',
           contactNotifications.includes(contact.id) && currentContact !== contact.id ? 'fas' : 'far'
         ]"
-        ></i> {{ contact.name }} ({{ contact.position }})
+        ></i> {{ contact.name }}
     </div>
 
   </div>
@@ -41,6 +41,7 @@ export default {
     ...mapState('chatStore',
     [
       'currentContact',
+      'currentContactName',
       'contactNotifications'
     ]),
   },
@@ -60,14 +61,15 @@ export default {
       });
     },
 
-    setNewContact(contactId) {
-      this.setNewContactInStore(contactId);
-      if(this.contactNotifications.includes(contactId)) {
-        this.removeFromContactNotifications(contactId);
+    setNewContact(contact) {
+      this.setNewContactInStore(contact);
+      if(this.contactNotifications.includes(contact.id)) {
+        this.removeFromContactNotifications(contact.name);
       }
 
-      axios.get('remove-contact-notification/' + contactId).then(() => {});
+      axios.get('remove-contact-notification/' + contact.id).then(() => {});
     }
+
   },
 
   mounted() {
@@ -83,8 +85,9 @@ export default {
 </script>
 
 <style lang="css">
-  .contact-link {
 
+  .contact-link {
+    border-bottom: 1px dotted rgba(255,255,255,.2);
   }
 
   .contact-link:hover {
@@ -98,21 +101,4 @@ export default {
     color: #d9d9d9;
   }
 
-  /* Contact notification animation */
-
-  .contact-blink {
-   -webkit-animation: CONTACT-BLINK 1s infinite; /* Safari 4+ */
-    -moz-animation:    CONTACT-BLINK 1s infinite; /* Fx 5+ */
-    -o-animation:      CONTACT-BLINK 1s infinite; /* Opera 12+ */
-    animation:         CONTACT-BLINK 1s infinite; /* IE 10+, Fx 29+ */
-  }
-
-  @-webkit-keyframes CONTACT-BLINK {
-    0%, 49% {
-        background-color: rgba(255,0,0,.3);
-    }
-    50%, 100% {
-        background-color: rgba(255,0,0,.4);
-    }
-  }
 </style>

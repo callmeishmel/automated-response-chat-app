@@ -1,6 +1,8 @@
 const mutations = {
   setNewContactInStore(state, payload) {
-    state.currentContact = payload;
+    console.log(payload);
+    state.currentContact = payload.id;
+    state.currentContactName = payload.name;
   },
 
   addToContactNotifications(state, payload) {

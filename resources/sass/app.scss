@@ -38,6 +38,8 @@ body,html {
 .chat-sidebar {
   background: #3F0E40;
   color: rgb(178,159,179);
+  max-height: 100vh;
+  overflow-y: scroll;
 }
 
 .chat-content {
@@ -49,5 +51,23 @@ body,html {
 }
 
 .chat-message-form {
-    background: #b29fb3 !important;
+  background: #b29fb3 !important;
+  overflow-y: scroll;
+}
+
+/* Contact notification animation */
+.contact-blink {
+ -webkit-animation: CONTACT-BLINK 1s infinite; /* Safari 4+ */
+  -moz-animation:    CONTACT-BLINK 1s infinite; /* Fx 5+ */
+  -o-animation:      CONTACT-BLINK 1s infinite; /* Opera 12+ */
+  animation:         CONTACT-BLINK 1s infinite; /* IE 10+, Fx 29+ */
+}
+
+@-webkit-keyframes CONTACT-BLINK {
+  0%, 49% {
+      background-color: rgba(255,0,0,.3);
+  }
+  50%, 100% {
+      background-color: rgba(255,0,0,.4);
+  }
 }

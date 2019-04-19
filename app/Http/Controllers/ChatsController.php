@@ -126,7 +126,7 @@ class ChatsController extends Controller
 
     $userContacts = User::where([
       'portfolio' => $user->portfolio,
-      ])->where('id', '!=', $user->id)->get();
+      ])->where('id', '!=', $user->id)->orderBy('name', 'ASC')->get();
 
     return $userContacts;
   }

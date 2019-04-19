@@ -1801,7 +1801,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       contacts: null
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'contactNotifications'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'currentContactName', 'contactNotifications'])),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('chatStore', ['setNewContactInStore', 'removeFromContactNotifications']), {
     getUserContacts: function getUserContacts() {
       var _this = this;
@@ -1810,14 +1810,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this.contacts = response.data;
       });
     },
-    setNewContact: function setNewContact(contactId) {
-      this.setNewContactInStore(contactId);
+    setNewContact: function setNewContact(contact) {
+      this.setNewContactInStore(contact);
 
-      if (this.contactNotifications.includes(contactId)) {
-        this.removeFromContactNotifications(contactId);
+      if (this.contactNotifications.includes(contact.id)) {
+        this.removeFromContactNotifications(contact.name);
       }
 
-      axios.get('remove-contact-notification/' + contactId).then(function () {});
+      axios.get('remove-contact-notification/' + contact.id).then(function () {});
     }
   }),
   mounted: function mounted() {
@@ -1916,7 +1916,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       selectedCannedMessageOption: null
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'currentContactName'])),
   watch: {
     'selectedCannedMessageOption': {
       handler: function handler(selectOption) {
@@ -2015,11 +2015,39 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['messages', 'user'],
   data: function data() {
-    return {};
+    return {
+      navbarHidden: false,
+      contactsHidden: false
+    };
   },
   watch: {
     'messages': {
@@ -2030,7 +2058,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'currentContactName', 'contactNotifications'])),
   methods: {
     sendMessage: function sendMessage(messageIndex, response, messageId) {
       this.messages[messageIndex].replied = 1;
@@ -2041,8 +2069,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         recipient_id: this.currentContact
       });
     },
-    hideNavbar: function hideNavbar() {
+    toggleNavbar: function toggleNavbar() {
+      this.navbarHidden = !this.navbarHidden;
       $(".navbar-laravel").toggle();
+    },
+    toggleContacts: function toggleContacts() {
+      this.contactsHidden = !this.contactsHidden;
+      $(".chat-sidebar").toggle();
+
+      if (this.contactsHidden) {
+        $(".chat-content").removeClass("col-8 col-md-10");
+        $(".chat-content").addClass("col-12");
+      } else {
+        $(".chat-content").removeClass("col-12");
+        $(".chat-content").addClass("col-8 col-md-10");
+      }
     }
   }
 });
@@ -6506,7 +6547,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.contact-link {\n}\n.contact-link:hover {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n  cursor: pointer;\n}\n.contact-link-active {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n}\n\n/* Contact notification animation */\n.contact-blink {\n -webkit-animation: CONTACT-BLINK 1s infinite; /* Safari 4+ */ /* Fx 5+ */ /* Opera 12+ */\n  animation:         CONTACT-BLINK 1s infinite; /* IE 10+, Fx 29+ */\n}\n@-webkit-keyframes CONTACT-BLINK {\n0%, 49% {\n      background-color: rgba(255,0,0,.3);\n}\n50%, 100% {\n      background-color: rgba(255,0,0,.4);\n}\n}\n", ""]);
+exports.push([module.i, "\n.contact-link {\n  border-bottom: 1px dotted rgba(255,255,255,.2);\n}\n.contact-link:hover {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n  cursor: pointer;\n}\n.contact-link-active {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n}\n\n", ""]);
 
 // exports
 
@@ -47928,7 +47969,7 @@ var render = function() {
             ],
             on: {
               click: function($event) {
-                return _vm.setNewContact(contact.id)
+                return _vm.setNewContact({ id: contact.id, name: contact.name })
               }
             }
           },
@@ -47943,13 +47984,7 @@ var render = function() {
                   : "far"
               ]
             }),
-            _vm._v(
-              " " +
-                _vm._s(contact.name) +
-                " (" +
-                _vm._s(contact.position) +
-                ")\n  "
-            )
+            _vm._v(" " + _vm._s(contact.name) + "\n  ")
           ]
         )
       })
@@ -48173,16 +48208,68 @@ var render = function() {
     _c(
       "button",
       {
+        staticClass: "btn btn-sm btn-warning rounded-0 toggle-contacts",
+        on: {
+          click: function($event) {
+            $event.preventDefault()
+            return _vm.toggleContacts($event)
+          }
+        }
+      },
+      [
+        _c("i", {
+          staticClass: "fas fa-arrow-left",
+          class: _vm.contactsHidden ? "fa-arrow-right" : "fa-arrow-left"
+        })
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "button",
+      {
         staticClass: "btn btn-sm btn-primary rounded-0",
         on: {
           click: function($event) {
             $event.preventDefault()
-            return _vm.hideNavbar($event)
+            return _vm.toggleNavbar($event)
           }
         }
       },
-      [_vm._v("Toggle Navbar")]
+      [
+        _c("i", {
+          staticClass: "fas",
+          class: _vm.navbarHidden ? "fa-arrow-down" : "fa-arrow-up"
+        })
+      ]
     ),
+    _vm._v(" "),
+    _vm.contactNotifications.length > 0
+      ? _c(
+          "div",
+          {
+            staticClass: "p-1 ml-1 alert-danger h1 float-right contact-blink",
+            staticStyle: { cursor: "pointer" },
+            on: { click: _vm.toggleContacts }
+          },
+          [_c("i", { staticClass: "fas fa-comments" })]
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.currentContactName !== null
+      ? _c(
+          "div",
+          {
+            staticClass: "p-1 text-light float-right",
+            staticStyle: { "background-color": "#3F0E40" }
+          },
+          [
+            _c("i", { staticClass: "fas fa-comment-dots" }),
+            _vm._v(
+              " Chatting with " + _vm._s(_vm.currentContactName) + "\n    "
+            )
+          ]
+        )
+      : _vm._e(),
     _vm._v(" "),
     _vm.currentContact !== null
       ? _c("div", [
@@ -66615,7 +66702,9 @@ var actions = {};
 __webpack_require__.r(__webpack_exports__);
 var mutations = {
   setNewContactInStore: function setNewContactInStore(state, payload) {
-    state.currentContact = payload;
+    console.log(payload);
+    state.currentContact = payload.id;
+    state.currentContactName = payload.name;
   },
   addToContactNotifications: function addToContactNotifications(state, payload) {
     if (state.currentContact !== payload && !state.contactNotifications.includes(payload)) {
@@ -66646,6 +66735,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var state = {
   currentContact: null,
+  currentContactName: null,
   contactNotifications: []
 };
 var getters = {};

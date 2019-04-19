@@ -77,7 +77,8 @@
         computed: {
           ...mapState('chatStore',
           [
-            'currentContact'
+            'currentContact',
+            'currentContactName'
           ]),
         },
 

@@ -3,16 +3,16 @@
 @section('content')
 
 <div id="chat-panel-wrapper" class="row">
-  <div class="col-md-2 chat-sidebar">
+  <div class="col-4 col-md-2 chat-sidebar">
     <chat-contacts
       :user="{{ Auth::user() }}"
       :contact-notifications-prop="{{ $contactNotifications }}"
     ></chat-contacts>
   </div>
 
-  <div class="col-md-10 p-0 chat-content">
+  <div class="col-8 col-md-10 p-0 chat-content">
 
-    <div class="chat-messages h-75">
+    <div class="chat-messages" style="height:65%;">
       <chat-messages
         v-on:messagesent="addMessage"
         :messages="messages"
@@ -20,7 +20,7 @@
       ></chat-messages>
     </div>
 
-    <div class="chat-message-form h-25 p-3">
+    <div class="chat-message-form p-3" style="height:35%;">
       <chat-form
           v-on:messagesent="addMessage"
           :user="{{ Auth::user() }}"
