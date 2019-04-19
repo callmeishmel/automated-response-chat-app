@@ -91,7 +91,12 @@
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>
+
+                                    @if(Auth::user()->position !== 'RM')
+                                        <a class="dropdown-item" href="/create-user">Create User</a>
+                                    @endif
                                 </div>
+
                             </li>
                         @endguest
                     </ul>

@@ -16466,6 +16466,15 @@ html {
   overflow-y: scroll;
 }
 
+.admin-form label {
+  width: 100%;
+}
+
+.invalid-submission {
+  color: red;
+  font-size: 0.8em;
+}
+
 /* Contact notification animation */
 
 .contact-blink {

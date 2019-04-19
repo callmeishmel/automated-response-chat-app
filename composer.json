@@ -31,7 +31,8 @@
         "league/flysystem-ziparchive": "^1.0",
         "nexmo/client": "^1.6",
         "pda/pheanstalk": "^4.0",
-        "php-console/php-console": "^3.1"
+        "php-console/php-console": "^3.1",
+        "pusher/pusher-php-server": "^3.4"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

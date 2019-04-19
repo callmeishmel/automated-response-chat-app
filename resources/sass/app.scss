@@ -55,6 +55,15 @@ body,html {
   overflow-y: scroll;
 }
 
+.admin-form label {
+  width: 100%;
+}
+
+.invalid-submission {
+  color: red;
+  font-size: .8em;
+}
+
 /* Contact notification animation */
 .contact-blink {
  -webkit-animation: CONTACT-BLINK 1s infinite; /* Safari 4+ */

@@ -24,6 +24,6 @@ Route::get('remove-contact-notification/{contactId}', 'ChatsController@removeCon
 
 Route::get('canned-message-responses/{id?}', 'ChatsController@getCannedMessageResponses');
 
-Route::get('admin', 'AdminController@index');
-Route::get('create-user', 'AdminController@createUser');
+Route::get('create-user', 'AdminController@createUserPage');
+Route::post('create-user', 'AdminController@createUserPost');
 Route::get('create-canned-reponse', 'AdminController@createCannedResponse');
