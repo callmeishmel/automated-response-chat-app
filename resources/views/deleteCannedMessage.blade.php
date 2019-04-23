@@ -6,6 +6,12 @@
 
   <div class="col-md-12 p-3 text-center">
 
+    @if(session()->has('message-failure'))
+      <div class="col-md-8 offset-2 alert alert-danger text-center">
+        {{ session()->get('message-failure') }}
+      </div>
+    @endif
+
     <br>
 
     <h3>Are you sure you want to delete canned message {{ $cannedMessage->id }}?</h3>

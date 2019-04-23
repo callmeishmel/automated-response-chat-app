@@ -6,18 +6,6 @@
 
   <div class="col-md-4 p-3">
 
-    @if(session()->has('message-success'))
-      <div class="alert alert-success text-center">
-        {{ session()->get('message-success') }}
-      </div>
-    @endif
-
-    @if(session()->has('message-failure'))
-      <div class="alert alert-danger text-center">
-        {{ session()->get('message-failure') }}
-      </div>
-    @endif
-
     <h3>
       {{ isset($_GET['msg']) ? 'Editing' : 'Create' }} Canned Message {{ isset($_GET['msg']) ? $_GET['msg'] : '' }}
       @if(isset($_GET['msg']))
@@ -53,6 +41,18 @@
           placeholder="Example: Response 1, Response 2, Response 3">@if(isset($_GET['msg'])){{ str_replace(['"','[',']'],'',$messageToEdit->possible_responses) }}@endif</textarea>
       </div><button type="submit" class="btn btn-primary btn-block">Submit</button>
     </form>
+
+    @if(session()->has('message-success'))
+      <div class="alert alert-success text-center mt-3">
+        {{ session()->get('message-success') }}
+      </div>
+    @endif
+
+    @if(session()->has('message-failure'))
+      <div class="alert alert-danger text-center mt-3">
+        {{ session()->get('message-failure') }}
+      </div>
+    @endif
 
   </div>
 
@@ -95,7 +95,7 @@
       </tbody>
     </table>
 
-    <div class="justify-content-center">
+    <div class="">
       {{ $cannedMessages->links() }}
     </div>
   </div>

@@ -24,13 +24,14 @@ Route::get('remove-contact-notification/{contactId}', 'ChatsController@removeCon
 
 Route::get('canned-message-responses/{id?}', 'ChatsController@getCannedMessageResponses');
 
-Route::get('create-user', 'AdminController@createUserPage');
-Route::post('create-user', 'AdminController@createUserPost');
+Route::get('users', 'AdminController@createUserPage');
+Route::post('users', 'AdminController@createUserPost');
+
+Route::get('delete-user/{userId}', 'AdminController@deleteUserPage');
+Route::post('delete-user/{userId}', 'AdminController@deleteUserPagePost');
 
 Route::get('canned-messages', 'AdminController@cannedMessagesPage');
 Route::post('canned-messages', 'AdminController@cannedMessagesPagePost');
-
-Route::get('edit-canned-message', 'AdminController@editCannedMessagePage');
 
 Route::get('delete-canned-message/{cannedMessageId}', 'AdminController@deleteCannedMessagePage');
 Route::post('delete-canned-message/{cannedMessageId}', 'AdminController@deleteCannedMessagePagePost');

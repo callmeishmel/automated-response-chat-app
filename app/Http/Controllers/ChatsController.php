@@ -124,9 +124,14 @@ class ChatsController extends Controller
   {
     $user = Auth::user();
 
-    $userContacts = User::where([
-      'portfolio' => $user->portfolio,
-      ])->where('id', '!=', $user->id)->orderBy('name', 'ASC')->get();
+    $userContacts = User::where('id', '!=', $user->id);
+
+    // Admins can see all contacts
+    if($user->position !== 'Admin') {
+      $userContacts = $userContacts->where(['portfolio' => $user->portfolio]);
+    }
+
+    $userContacts = $userContacts->orderBy('name', 'ASC')->get();
 
     return $userContacts;
   }

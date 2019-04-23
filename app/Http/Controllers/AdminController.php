@@ -26,7 +26,21 @@ class AdminController extends Controller
     if (Auth::user()->position === 'RM') {
       return redirect('/');
     }
-    return view('createUser');
+
+    // Ugly ass hack to make laravel pagination work with other $_GET variables
+    if(!isset($_GET['page'])) {
+      return redirect('users?page=1');
+    }
+
+    if(isset($_GET['usr'])) {
+      $userToEdit = User::where('id', '=', $_GET['usr'])->first();
+    } else {
+      $userToEdit = null;
+    }
+
+    $users = User::orderBy('position', 'ASC')->orderBy('name', 'ASC')->paginate(15);
+
+    return view('createUser', compact(['users','userToEdit']));
 
   }
 
@@ -42,36 +56,110 @@ class AdminController extends Controller
     }
 
     // Validate form data
-    $validatedData = $request->validate([
-        'name' => 'required|string',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:6|same:password_confirmation',
-        'portfolio' => 'string|nullable',
-        'team' => 'string|nullable',
-        'position' => 'required|string',
-    ]);
+    // NOTE Some fields require different rules for editing or creating users
+
+    $validationRules = [
+      'name' => 'required|string',
+      'portfolio' => 'string|nullable',
+      'team' => 'string|nullable',
+      'position' => 'required|string',
+    ];
+
+    if(isset($_GET['usr'])) {
+      $validationRules['email'] = 'required|email';
+      $validationRules['password'] = 'nullable|min:6|same:password_confirmation';
+    } else {
+      $validationRules['email'] = 'required|email|unique:users,email';
+      $validationRules['password'] = 'required|min:6|same:password_confirmation';
+    }
+
+    $validatedData = $request->validate($validationRules);
 
     try {
+
       $post = $request->all();
 
-      $newUser = User::create([
-        'name' => $post['name'],
-        'email' => $post['email'],
-        'password' => Hash::make($post['password']),
-        'portfolio' => $post['portfolio'],
-        'team' => $post['team'],
-        'position' => $post['position']
-      ]);
-
-      if($newUser) {
-        return redirect()->back()->with('message-success', 'User ' . $post['name'] . ' creation successful');
+      if(isset($_GET['usr'])) {
+        if($this->editUser($_GET['usr'], $request->all())) {
+          return redirect()->back()->with('message-success', 'User ' . $post['name'] . ' successfully edited');
+        }
+      } else {
+        if($this->createUser($request->all())) {
+          return redirect()->back()->with('message-success', 'User ' . $post['name'] . ' creation successful');
+        }
       }
+
     } catch (\Illuminate\Database\QueryException $e) {
         // something went wrong with the transaction, rollback
         return redirect()->back()->with('message-failure', 'User ' . $post['name'] . ' creation failed: ' . $e->getMessage());
     } catch (\Exception $e) {
         // something went wrong elsewhere, handle gracefully
         return redirect()->back()->with('message-failure', 'User ' . $post['name'] . ' creation failed: ' . $e->getMessage());
+    }
+
+  }
+
+  public function editUser($usrId, $post)
+  {
+
+    $user = User::where('id', '=', $usrId)->first();
+
+    $user->name = $post['name'];
+    $user->email = $post['email'];
+    $user->portfolio = $post['portfolio'];
+    $user->team = $post['team'];
+    $user->position = $post['position'];
+
+    if(!empty($post['password'])) {
+      $user->password = Hash::make($post['password']);
+    }
+
+    $user->save();
+
+    return $user;
+
+  }
+
+  public function createUser($post)
+  {
+    $newUser = User::create([
+      'name' => $post['name'],
+      'email' => $post['email'],
+      'password' => Hash::make($post['password']),
+      'portfolio' => $post['portfolio'],
+      'team' => $post['team'],
+      'position' => $post['position']
+    ]);
+
+    return $newUser;
+  }
+
+  public function deleteUserPage($userId)
+  {
+    $user = User::where('id', '=', $userId)->first();
+
+    return view('deleteUser', compact('user'));
+  }
+
+  public function deleteUserPagePost($userId)
+  {
+
+    try {
+
+      $user = User::where('id', '=', $userId)->first();
+
+      if($user->delete()) {
+        return redirect('/users?page=1')->with('message-success', 'User successfully deleted');
+      }
+
+      return view('deleteUser', compact('user'));
+
+    } catch (\Illuminate\Database\QueryException $e) {
+        // something went wrong with the transaction, rollback
+        return redirect()->back()->with('message-failure', 'User deletion failed: ' . $e->getMessage());
+    } catch (\Exception $e) {
+        // something went wrong elsewhere, handle gracefully
+        return redirect()->back()->with('message-failure', 'User deletion failed: ' . $e->getMessage());
     }
 
   }
