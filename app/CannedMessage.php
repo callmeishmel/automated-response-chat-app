@@ -11,6 +11,6 @@ class CannedMessage extends Model
     *
     * @var array
     */
-    protected $fillable = ['message'];
+    protected $fillable = ['message', 'type', 'possible_responses', 'created_by', 'updated_by'];
 
 }

@@ -16475,6 +16475,13 @@ html {
   font-size: 0.8em;
 }
 
+/* Bootstrap overrides */
+
+.table-sm th,
+.table-sm td {
+  padding: 0.2rem !important;
+}
+
 /* Contact notification animation */
 
 .contact-blink {

@@ -64,6 +64,12 @@ body,html {
   font-size: .8em;
 }
 
+/* Bootstrap overrides */
+
+.table-sm th, .table-sm td {
+    padding: 0.2rem !important;
+}
+
 /* Contact notification animation */
 .contact-blink {
  -webkit-animation: CONTACT-BLINK 1s infinite; /* Safari 4+ */

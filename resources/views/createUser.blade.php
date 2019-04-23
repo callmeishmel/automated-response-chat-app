@@ -26,7 +26,7 @@
       <div class="form-group">
         @csrf
         <label for="name">
-          <div class="float-left">Name:</div>
+          <div class="float-left">Name</div>
           @if($errors->has('name'))
               <div class="float-right invalid-submission">{{ $errors->first('name') }}</div>
           @endif
@@ -35,7 +35,7 @@
       </div>
       <div class="form-group">
         <label for="email">
-          <div class="float-left">Email:</div>
+          <div class="float-left">Email</div>
           @if($errors->has('email'))
               <div class="float-right invalid-submission">{{ $errors->first('email') }}</div>
           @endif
@@ -44,7 +44,7 @@
       </div>
       <div class="form-group">
         <label for="password">
-          <div class="float-left">Password:</div>
+          <div class="float-left">Password</div>
           @if($errors->has('password'))
               <div class="float-right invalid-submission">{{ $errors->first('password') }}</div>
           @endif
@@ -53,7 +53,7 @@
       </div>
       <div class="form-group">
         <label for="password_confirmation">
-          <div class="float-left">Verify Password:</div>
+          <div class="float-left">Verify Password</div>
           @if($errors->has('password_confirmation'))
               <div class="float-right invalid-submission">{{ $errors->first('password_confirmation') }}</div>
           @endif
@@ -62,7 +62,7 @@
       </div>
       <div class="form-group">
         <label for="portfolio">
-          <div class="float-left">Portfolio:</div>
+          <div class="float-left">Portfolio</div>
           @if($errors->has('portfolio'))
               <div class="float-right invalid-submission">{{ $errors->first('portfolio') }}</div>
           @endif
@@ -71,7 +71,7 @@
       </div>
       <div class="form-group">
         <label for="team">
-          <div class="float-left">Team:</div>
+          <div class="float-left">Team</div>
           @if($errors->has('team'))
               <div class="float-right invalid-submission">{{ $errors->first('team') }}</div>
           @endif
@@ -80,7 +80,7 @@
       </div>
       <div class="form-group">
         <label for="position">
-          <div class="float-left">Position:</div>
+          <div class="float-left">Position</div>
           @if($errors->has('position'))
               <div class="float-right invalid-submission">{{ $errors->first('position') }}</div>
           @endif

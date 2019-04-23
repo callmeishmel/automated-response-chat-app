@@ -26,4 +26,11 @@ Route::get('canned-message-responses/{id?}', 'ChatsController@getCannedMessageRe
 
 Route::get('create-user', 'AdminController@createUserPage');
 Route::post('create-user', 'AdminController@createUserPost');
-Route::get('create-canned-reponse', 'AdminController@createCannedResponse');
+
+Route::get('canned-messages', 'AdminController@cannedMessagesPage');
+Route::post('canned-messages', 'AdminController@cannedMessagesPagePost');
+
+Route::get('edit-canned-message', 'AdminController@editCannedMessagePage');
+
+Route::get('delete-canned-message/{cannedMessageId}', 'AdminController@deleteCannedMessagePage');
+Route::post('delete-canned-message/{cannedMessageId}', 'AdminController@deleteCannedMessagePagePost');
