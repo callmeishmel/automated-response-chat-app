@@ -128,7 +128,7 @@ class ChatsController extends Controller
 
     // Admins can see all contacts
     if($user->position !== 'Admin') {
-      $userContacts = $userContacts->where(['portfolio' => $user->portfolio]);
+      $userContacts = $userContacts->where(['portfolio' => $user->portfolio])->orWhere(['position' => 'Admin']);
     }
 
     $userContacts = $userContacts->orderBy('name', 'ASC')->get();

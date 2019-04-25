@@ -12,7 +12,7 @@
 
   <div class="col-8 col-md-10 p-0 chat-content">
 
-    <div class="chat-messages" style="height:65%;">
+    <div class="chat-messages px-2" style="height:65%;">
       <chat-messages
         v-on:messagesent="addMessage"
         :messages="messages"

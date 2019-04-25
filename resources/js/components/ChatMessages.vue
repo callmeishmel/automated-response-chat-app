@@ -1,69 +1,73 @@
 <template>
 
-  <div>
-
-      <button class="btn btn-sm btn-warning rounded-0 toggle-contacts" @click.prevent="toggleContacts">
-        <i
-          class="fas fa-arrow-left"
-          :class="contactsHidden ? 'fa-arrow-right' : 'fa-arrow-left'"></i>
-      </button>
-
-      <button class="btn btn-sm btn-primary rounded-0" @click.prevent="toggleNavbar">
-        <i
-          class="fas"
-          :class="navbarHidden ? 'fa-arrow-down' : 'fa-arrow-up'"></i>
-      </button>
+  <div style="position: relative;">
 
       <div
         v-if="contactNotifications.length > 0"
         @click="toggleContacts"
-        style="cursor:pointer;"
+        style="cursor:pointer; position: fixed; bottom: -3px;"
         class="p-1 ml-1 alert-danger h1 float-right contact-blink">
         <i class="fas fa-comments"></i>
       </div>
 
-      <div
-        v-if="currentContactName !== null"
-        style="background-color: #3F0E40;"
-        class="p-1 text-light float-right">
-        <i class="fas fa-comment-dots"></i> Chatting with {{ currentContactName }}
+      <div class="position-fixed py-1 px-2 mt-1 rounded" style="background-color: #fff; z-index: 999;">
+        <button class="btn btn-sm btn-warning rounded-0 toggle-contacts" @click.prevent="toggleContacts">
+          <i
+            class="fas fa-arrow-left"
+            :class="contactsHidden ? 'fa-arrow-right' : 'fa-arrow-left'"></i>
+        </button>
+
+        <button class="btn btn-sm btn-primary mr-1 rounded-0" @click.prevent="toggleNavbar">
+          <i
+            class="fas"
+            :class="navbarHidden ? 'fa-arrow-down' : 'fa-arrow-up'"></i>
+        </button>
+
+        <div
+          v-if="currentContactName !== null"
+          style="background-color: #3F0E40;"
+          class="p-1 text-light float-right">
+          <i class="fas fa-comment-dots"></i> Chatting with {{ currentContactName }}
+        </div>
       </div>
 
-      <div v-if="currentContact !== null">
-          <ul class="chat">
-              <li
-                class="p-3"
-                :class="{ 'text-right' : message.user.id !== user.id}"
-                v-for="(message,index) in messages">
-                  <div class="chat-body">
-                      <div class="header">
-                          <strong class="primary-font">
-                              {{ message.user.name }} <small>{{ message.created_at | moment("ddd, MMM Do h:mma") }}</small>
-                              <span v-if="message.replied">
-                                <i class="fas fa-comment-dots text-info" style="font-size: 1.18rem;"></i>
-                              </span>
-                          </strong>
-                      </div>
-                      <p>
-                          {{ message.message }}
-                      </p>
+      <div class="pt-5" v-if="currentContact !== null">
 
-                      <div v-if="!message.replied">
-                          <div v-if="message.user.id !== user.id && message.canned_message_responses !== ''">
-                              <div
-                                  class="btn btn-sm btn-primary ml-1"
-                                  @click="sendMessage(index, response, message.id)"
-                                  v-for="response in JSON.parse(message.canned_message_responses)">
-                                  {{ response }}
-                              </div>
+        <div class="col-md-12" style="overflow:hidden;" v-for="(message,index) in messages">
+
+          <div
+            class="round-bubble my-2 py-2 px-4"
+            :class="message.user.id !== user.id ? 'from-bubble float-left' : 'float-right text-right to-bubble text-white'">
+              <div class="chat-body">
+                  <div class="header">
+                      <strong class="primary-font">
+                          {{ message.user.name }} <small>{{ message.created_at | moment("ddd, MMM Do h:mma") }}</small>
+                          <span v-if="message.replied">
+                            <i class="fas fa-comment-dots text-info" style="font-size: 1.18rem;"></i>
+                          </span>
+                      </strong>
+                  </div>
+                  <p style="font-size: 1.1rem;">
+                      {{ message.message }}
+                  </p>
+
+                  <div v-if="!message.replied">
+                      <div v-if="message.user.id !== user.id && message.canned_message_responses !== ''">
+                          <div
+                              class="btn btn-sm btn-primary ml-1"
+                              @click="sendMessage(index, response, message.id)"
+                              v-for="response in JSON.parse(message.canned_message_responses)">
+                              {{ response }}
                           </div>
                       </div>
-
                   </div>
-              </li>
-          </ul>
+
+              </div>
+          </div>
+        </div>
+
       </div>
-      <div v-else class="h3 text-center mt-5" style="font-size: 2.5em; color: rgba(0,0,0,.3);">
+      <div v-else class="h3 text-center mt-5" style="display: inline-block; width: 100%; font-size: 2.5em; color: rgba(0,0,0,.3);">
         Select a contact to begin chatting
       </div>
   </div>
@@ -117,6 +121,11 @@
         toggleNavbar() {
           this.navbarHidden = !this.navbarHidden;
           $(".navbar-laravel").toggle();
+          if(!this.navbarHidden) {
+            $(".chat-sidebar").css({maxHeight: 'calc(100vh - 55px)'});
+          } else {
+            $(".chat-sidebar").css({maxHeight: '100vh'});
+          }
         },
 
         toggleContacts() {
@@ -136,5 +145,17 @@
 </script>
 
 <style lang="css">
+
+.from-bubble {
+  background-color: #e5e5ea;
+}
+
+.to-bubble {
+  background-color: #0b84ff;
+}
+
+.round-bubble {
+  border-radius: 1rem;
+}
 
 </style>

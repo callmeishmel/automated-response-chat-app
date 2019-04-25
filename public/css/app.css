@@ -16449,7 +16449,7 @@ html {
 .chat-sidebar {
   background: #3F0E40;
   color: #b29fb3;
-  max-height: 100vh;
+  max-height: calc(100vh - 55px);
   overflow-y: scroll;
 }
 
