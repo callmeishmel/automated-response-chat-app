@@ -4,7 +4,8 @@ import mutations from './mutations.js';
 const state = {
   currentContact: null,
   currentContactName: null,
-  contactNotifications: []
+  contactNotifications: [],
+  contactsOnlineStatus: null,
 };
 
 const getters = {

@@ -35,3 +35,7 @@ Route::post('canned-messages', 'AdminController@cannedMessagesPagePost');
 
 Route::get('delete-canned-message/{cannedMessageId}', 'AdminController@deleteCannedMessagePage');
 Route::post('delete-canned-message/{cannedMessageId}', 'AdminController@deleteCannedMessagePagePost');
+
+Route::post('pusher/presence-webhook', 'PusherWebhookController@presenceWebhook');
+
+Route::get('pusher/api-test', 'PusherWebhookController@pusherAPICall');

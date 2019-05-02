@@ -42,7 +42,7 @@ class ChatsController extends Controller
     $messages = Message::whereRaw("
       (messages.recipient_id = $contactId AND messages.user_id = $user->id OR
       messages.recipient_id = $user->id AND messages.user_id = $contactId)
-    ")->with('user')->get();
+    ")->with('user')->limit(50)->get();
 
     foreach($messages as $message) {
       if(!is_null($message->canned_message_id)) {
@@ -73,6 +73,12 @@ class ChatsController extends Controller
       'canned_message_id' => $request->input('canned_message_id'),
       'recipient_id' => $request->input('recipient_id')
     ]);
+
+    $recipient = User::where(['id' => $request->input('recipient_id')])->first();
+
+    if($recipient->status === 'offline') {
+      $this->addContactNotification($request->input('recipient_id'));
+    }
 
     broadcast(new MessageSent($user, $message))->toOthers();
 
@@ -111,7 +117,7 @@ class ChatsController extends Controller
   */
   public function getCurrentAppUser()
   {
-    return Auth::user()->id;
+    return ['user_id' => Auth::user()->id, 'api_token' => Auth::user()->api_token];
   }
 
   /**
@@ -137,18 +143,30 @@ class ChatsController extends Controller
   }
 
   /**
+  * Get all users online status
+  *
+  * @param  int $id
+  * @return json
+  */
+  public function getUserContactsOnlineStatus() {
+
+    return User::select(['id','status'])->get();
+
+  }
+
+  /**
   * Add contact to the contact_notifications table
   *
   * @param  int $id
   * @return json
   */
-  public function addContactNotification($contactId)
+  public function addContactNotification($from)
   {
-    $user = Auth::user();
+    $to = Auth::user()->id;
 
     $contactNotification = ContactNotification::create([
-      'customer_id' => $user->id,
-      'contact_id' => $contactId
+      'customer_id' => $from,
+      'contact_id' => $to
     ]);
 
     return $contactNotification;

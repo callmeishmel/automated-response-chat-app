@@ -15,6 +15,7 @@ class UserTableSeeder extends Seeder
           'name' => 'Ismael',
           'email' => 'ismael@ileadserve.com',
           'password' => bcrypt('Lizardlips00'),
+          'api_token' => Str::random(60),
           'portfolio' => 'CCL',
           'team' => 'kelsea',
           'position' => 'RM'
@@ -24,6 +25,7 @@ class UserTableSeeder extends Seeder
           'name' => 'Ryan',
           'email' => 'ryan@ileadserve.com',
           'password' => bcrypt('Lizardlips00'),
+          'api_token' => Str::random(60),
           'portfolio' => 'CCL',
           'team' => 'kelsea',
           'position' => 'TL'
@@ -33,6 +35,7 @@ class UserTableSeeder extends Seeder
           'name' => 'Kelsea',
           'email' => 'kelsea@ileadserve.com',
           'password' => bcrypt('Lizardlips00'),
+          'api_token' => Str::random(60),
           'portfolio' => 'CCL',
           'team' => 'kelsea',
           'position' => 'TL'
@@ -42,6 +45,7 @@ class UserTableSeeder extends Seeder
           'name' => 'Anne',
           'email' => 'anne@ileadserve.com',
           'password' => bcrypt('Lizardlips00'),
+          'api_token' => Str::random(60),
           'portfolio' => 'PCL',
           'team' => 'jess',
           'position' => 'RM'
@@ -51,6 +55,7 @@ class UserTableSeeder extends Seeder
           'name' => 'Nancy',
           'email' => 'nancy@ileadserve.com',
           'password' => bcrypt('Lizardlips00'),
+          'api_token' => Str::random(60),
           'portfolio' => 'PCL',
           'team' => 'jess',
           'position' => 'RM'

@@ -18,6 +18,21 @@
           contactNotifications.includes(contact.id) && currentContact !== contact.id ? 'fas' : 'far'
         ]"
         ></i> {{ contact.name }}
+        <div
+          class="float-right pr-1"
+          style="opacity: .6;"
+          v-if="contactsOnlineStatus !== null">
+          <i
+            v-if="contactsOnlineStatus[contact.id] === 'online'"
+            class="fas fa-user-circle text-light">
+          </i>
+          <i
+            v-else
+            class="fas fa-minus-circle text-secondary">
+          </i>
+        </div>
+
+
     </div>
 
   </div>
@@ -33,7 +48,8 @@ export default {
 
   data() {
     return {
-      contacts: null
+      contacts: null,
+      onlineStatus: null
     }
   },
 
@@ -42,7 +58,8 @@ export default {
     [
       'currentContact',
       'currentContactName',
-      'contactNotifications'
+      'contactNotifications',
+      'contactsOnlineStatus',
     ]),
   },
 
@@ -50,7 +67,8 @@ export default {
     ...mapMutations('chatStore',
       [
         'setNewContactInStore',
-        'removeFromContactNotifications'
+        'removeFromContactNotifications',
+        'getUserContactsOnlineStatus',
       ]
     ),
 
@@ -73,6 +91,13 @@ export default {
   },
 
   mounted() {
+
+    this.getUserContactsOnlineStatus(this.user.api_token);
+
+    setInterval(() => {
+      this.getUserContactsOnlineStatus(this.user.api_token);
+    }, 60000);
+
     this.getUserContacts();
 
     for(var i = 0; i < this.contactNotificationsProp.length; i++) {

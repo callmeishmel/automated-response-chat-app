@@ -50,43 +50,40 @@ const app = new Vue({
 
     created() {
         var vm = this;
-        this.getCurrentAppUser();
         this.fetchMessages(vm.contactId);
 
-        Echo.private('chat')
-        .listen('MessageSent', (e) => {
+        axios.get('/current-app-user').then(response => {
+          Echo.private('chat.user.' + response.data.user_id)
+          .listen('MessageSent', (e) => {
 
-            // Light up the user's name on the recipients client contact list
-            if(vm.currentAppUser === e.message.recipient_id && !vm.contactNotifications.includes(e.user.id) && vm.currentContact !== e.user.id) {
+              // Play sound and add to notifications upon receiving message if
+              // currentAppUser is not actively selecting sender
+              vm.playSound('/sounds/appointed.mp3');
+              store.commit('chatStore/addToContactNotifications', e.message.user_id);
 
-                // Play sound and add to notifications upon receiving message if
-                // currentAppUser is not actively selecting sender
-                axios.get('add-contact-notification/' + e.message.user_id).then(response => {
-                  vm.playSound('/sounds/appointed.mp3');
-                  store.commit('chatStore/addToContactNotifications', e.message.user_id);
+              // NOTE chat channel is in app/Events/MessageSent.php
+              if(vm.currentAppUser === e.message.recipient_id && vm.currentContact === e.message.user_id) {
+                axios.get('/canned-message-responses/' + e.message.canned_message_id).
+                then(response => {
+                  this.messages.push({
+                    user: e.user,
+                    message: e.message.message,
+                    recipient_id: e.message.recipient_id,
+                    created_at: e.message.created_at,
+                    canned_message_id: e.message.canned_message_id,
+                    canned_message_responses: response.data,
+                  });
                 });
+              }
 
-            }
-
-            // The following condition is messy and heavy but necessary in order
-            // To keep conversations between two users without running the temp
-            // message update to all customers listening to the 'chat' channel
-            // NOTE chat channel is in app/Events/MessageSent.php
-            if(vm.currentAppUser === e.message.recipient_id && vm.currentContact === e.message.user_id) {
-              axios.get('/canned-message-responses/' + e.message.canned_message_id).
-              then(response => {
-                this.messages.push({
-                  user: e.user,
-                  message: e.message.message,
-                  recipient_id: e.message.recipient_id,
-                  created_at: e.message.created_at,
-                  canned_message_id: e.message.canned_message_id,
-                  canned_message_responses: response.data,
-                });
-              });
-            }
+          });
 
         });
+
+    },
+
+    mounted() {
+      this.listen();
     },
 
     computed: {
@@ -106,6 +103,27 @@ const app = new Vue({
     },
 
     methods: {
+
+        listen() {
+            Echo.join('chat')
+                .joining((user) => {
+                    axios.put('/api/user/'+ user.id +'/online?api_token=' + user.api_token, {});
+                })
+                .leaving((user) => {
+                    axios.put('/api/user/'+ user.id +'/offline?api_token=' + user.api_token, {});
+                })
+                // Listen functions are only here as a look out for Pusher's
+                // presence event messages being turned, these should never
+                // trigger. This saves on Pusher's message bandwidth.
+                // READ: https://support.pusher.com/hc/en-us/articles/360019620253-How-can-I-implement-large-presence-channels-on-Channels-
+                .listen('UserOnline', (e) => {
+                    console.log('UserOnline', e);
+                })
+                .listen('UserOffline', (e) => {
+                    console.log('UserOffline', e);
+                });
+        },
+
         fetchMessages(contactId) {
             axios.get('/messages/' + contactId).then(response => {
                 this.messages = response.data;
