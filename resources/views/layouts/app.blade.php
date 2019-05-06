@@ -7,10 +7,13 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
+
+    <link rel="shortcut icon" href="{{ asset('img/favicon.png') }}">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -52,7 +55,14 @@
 
 </head>
 <body>
-    <div id="app">
+    <div id="app" user-auth="{{ Auth::check() }}" session-timeout="{{ env('SESSION_LIFETIME') * 1000 }}">
+
+      @if(Auth::check())
+      <vue-session-component
+        logout-route="{{ route('logout') }}">
+      </vue-session-component>
+      @endif
+
         <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
             <div class="container-fluid mx-1 p-0">
                 <a class="navbar-brand" href="{{ url('/') }}">

@@ -96,7 +96,7 @@ export default {
 
     setInterval(() => {
       this.getUserContactsOnlineStatus(this.user.api_token);
-    }, 60000);
+    }, 30000);
 
     this.getUserContacts();
 

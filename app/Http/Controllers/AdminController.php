@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use App\User;
 use App\CannedMessage;
@@ -63,6 +64,7 @@ class AdminController extends Controller
       'portfolio' => 'string|nullable',
       'team' => 'string|nullable',
       'position' => 'required|string',
+
     ];
 
     if(isset($_GET['usr'])) {
@@ -106,6 +108,7 @@ class AdminController extends Controller
 
     $user->name = $post['name'];
     $user->email = $post['email'];
+    $user->api_token = Str::random(60);
     $user->portfolio = $post['portfolio'];
     $user->team = $post['team'];
     $user->position = $post['position'];
@@ -126,6 +129,7 @@ class AdminController extends Controller
       'name' => $post['name'],
       'email' => $post['email'],
       'password' => Hash::make($post['password']),
+      'api_token' => Str::random(60),
       'portfolio' => $post['portfolio'],
       'team' => $post['team'],
       'position' => $post['position']

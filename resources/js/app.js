@@ -12,6 +12,19 @@ window.Vue = require('vue');
 // Moment.js
 Vue.use(require('vue-moment'));
 
+/* Idle Vue */
+
+import IdleVue from 'idle-vue';
+
+const eventsHub = new Vue();
+
+const idleViewOptions = {
+  eventEmitter: eventsHub,
+  idleTime: $('#app')[0].attributes['session-timeout'].value,
+  store
+}
+Vue.use(IdleVue, idleViewOptions);
+
 // Vuex stores
 import Vuex from 'vuex';
 import store from './vuex/store.js';
@@ -31,6 +44,21 @@ Vue.use(Vuex);
 Vue.component('chat-contacts', require('./components/ChatContacts.vue').default);
 Vue.component('chat-messages', require('./components/ChatMessages.vue').default);
 Vue.component('chat-form', require('./components/ChatForm.vue').default);
+Vue.component('vueSessionComponent', require('./components/vueSessionComponent.vue').default);
+
+/**
+ * Import transition components
+ */
+import {FadeTransition} from 'vue2-transitions';
+import {ZoomCenterTransition} from 'vue2-transitions';
+import {ZoomXTransition} from 'vue2-transitions';
+import {ZoomYTransition} from 'vue2-transitions';
+import {CollapseTransition} from 'vue2-transitions';
+import {ScaleTransition} from 'vue2-transitions';
+import {SlideXLeftTransition} from 'vue2-transitions';
+import {SlideXRightTransition} from 'vue2-transitions';
+import {SlideYUpTransition} from 'vue2-transitions';
+import {SlideYDownTransition} from 'vue2-transitions';
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -40,16 +68,35 @@ Vue.component('chat-form', require('./components/ChatForm.vue').default);
 
 const app = new Vue({
     el: '#app',
+    components: {
+      FadeTransition,
+      ZoomCenterTransition,
+      ZoomXTransition,
+      ZoomYTransition,
+      CollapseTransition,
+      ScaleTransition,
+      SlideXLeftTransition,
+      SlideXRightTransition,
+      SlideYUpTransition,
+      SlideYDownTransition,
+    },
     store: store,
     data: {
         // currentAppUser is who is accessing the site not sending the messages
+        userAuth: false,
+        sessionLifetime: null,
         currentAppUser: null,
         contactId: null,
-        messages: []
+        messages: [],
     },
 
-    created() {
-        var vm = this;
+    beforeMount() {
+      this.userAuth = this.$el.attributes['user-auth'].value;
+
+      var vm = this;
+
+      if(vm.userAuth) {
+
         this.fetchMessages(vm.contactId);
 
         axios.get('/current-app-user').then(response => {
@@ -62,7 +109,7 @@ const app = new Vue({
               store.commit('chatStore/addToContactNotifications', e.message.user_id);
 
               // NOTE chat channel is in app/Events/MessageSent.php
-              if(vm.currentAppUser === e.message.recipient_id && vm.currentContact === e.message.user_id) {
+              if(vm.currentContact === e.message.user_id) {
                 axios.get('/canned-message-responses/' + e.message.canned_message_id).
                 then(response => {
                   this.messages.push({
@@ -80,10 +127,13 @@ const app = new Vue({
 
         });
 
+      }
     },
 
     mounted() {
-      this.listen();
+      if(this.userAuth) {
+        this.listen();
+      }
     },
 
     computed: {

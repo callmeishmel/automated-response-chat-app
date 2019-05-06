@@ -13,6 +13,8 @@
 
 Auth::routes();
 
+Route::get('/logout' , 'Auth\LoginController@logout');
+
 Route::get('/', 'ChatsController@index');
 Route::get('messages/{contactId?}', 'ChatsController@fetchMessages');
 Route::post('messages', 'ChatsController@sendMessage');
