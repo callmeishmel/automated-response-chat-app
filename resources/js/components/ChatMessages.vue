@@ -2,12 +2,26 @@
 
   <div style="position: relative;">
 
-      <div
-        v-if="contactNotifications.length > 0"
-        @click="toggleContacts"
-        style="cursor:pointer; position: fixed; bottom: -3px;"
-        class="p-1 ml-1 alert-danger h1 float-right contact-blink">
-        <i class="fas fa-comments"></i>
+      <div class="position-fixed" style="right: 15px; z-index:9999; background-color: #fff;">
+
+        <div
+          v-if="contactNotifications.length > 0"
+          v-for="contactId in contactNotifications"
+          style="cursor:pointer;"
+          class="p-1 ml-1 alert-danger float-right contact-blink">
+          <div
+            v-for="contact in userContacts"
+            @click="setNewContact({id:contact.id, name:contact.name})"
+            v-if="contact.id === contactId">
+            <div v-if="contact.status === 'online'">
+              {{ contact.name }} <i class="fas fa-user-circle"></i>
+            </div>
+            <div v-else>
+              {{ contact.name }} <i class="fas fa-minus-circle"></i>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div class="position-fixed py-1 px-2 mt-1 rounded" style="background-color: #fff; z-index: 999;">
@@ -103,11 +117,21 @@
       [
         'currentContact',
         'currentContactName',
-        'contactNotifications'
+        'contactNotifications',
+        'userContacts',
       ]),
     },
 
     methods: {
+
+        ...mapMutations('chatStore',
+          [
+            'setNewContactInStore',
+            'removeFromContactNotifications',
+            'getUserContacts',
+          ]
+        ),
+
         sendMessage(messageIndex, response, messageId) {
             this.messages[messageIndex].replied = 1;
             this.$emit('messagesent', {
@@ -116,6 +140,15 @@
                 parent_message_id: messageId,
                 recipient_id: this.currentContact
             });
+        },
+
+        setNewContact(contact) {
+          this.setNewContactInStore(contact);
+          if(this.contactNotifications.includes(contact.id)) {
+            this.removeFromContactNotifications(contact.id);
+          }
+
+          axios.get('remove-contact-notification/' + contact.id).then(() => {});
         },
 
         toggleNavbar() {

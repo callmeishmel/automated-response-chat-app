@@ -15,14 +15,10 @@ const mutations = {
     state.contactNotifications.splice(contactIndex,1);
   },
 
-  getUserContactsOnlineStatus(state, payload) {
-    axios.get('/api/contacts-online-status?api_token=' + payload, {})
+  getUserContacts(state, payload) {
+    axios.get('/api/get-contacts?api_token=' + payload, {})
     .then(response => {
-      let contactsArray = {};
-      for(let i in response.data) {
-        contactsArray[response.data[i]['id']] = response.data[i]['status'];
-      }
-      state.contactsOnlineStatus = contactsArray;
+      state.userContacts = response.data;
     });
   }
 }

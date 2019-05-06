@@ -10,7 +10,7 @@
         contactNotifications.includes(contact.id) && currentContact !== contact.id ? 'contact-blink' : ''
       ]"
       @click="setNewContact({id:contact.id, name:contact.name})"
-      v-for="contact in contacts">
+      v-for="contact in userContacts">
       <i
         class="fa-circle"
         :class="[
@@ -21,9 +21,9 @@
         <div
           class="float-right pr-1"
           style="opacity: .6;"
-          v-if="contactsOnlineStatus !== null">
+          v-if="contact.status !== null">
           <i
-            v-if="contactsOnlineStatus[contact.id] === 'online'"
+            v-if="contact.status === 'online'"
             class="fas fa-user-circle text-light">
           </i>
           <i
@@ -31,7 +31,6 @@
             class="fas fa-minus-circle text-secondary">
           </i>
         </div>
-
 
     </div>
 
@@ -59,7 +58,7 @@ export default {
       'currentContact',
       'currentContactName',
       'contactNotifications',
-      'contactsOnlineStatus',
+      'userContacts',
     ]),
   },
 
@@ -68,21 +67,14 @@ export default {
       [
         'setNewContactInStore',
         'removeFromContactNotifications',
-        'getUserContactsOnlineStatus',
+        'getUserContacts',
       ]
     ),
-
-    getUserContacts() {
-      axios.get('/user-contacts').then(response => {
-
-        this.contacts = response.data;
-      });
-    },
 
     setNewContact(contact) {
       this.setNewContactInStore(contact);
       if(this.contactNotifications.includes(contact.id)) {
-        this.removeFromContactNotifications(contact.name);
+        this.removeFromContactNotifications(contact.id);
       }
 
       axios.get('remove-contact-notification/' + contact.id).then(() => {});
@@ -92,13 +84,12 @@ export default {
 
   mounted() {
 
-    this.getUserContactsOnlineStatus(this.user.api_token);
+    this.getUserContacts(this.user.api_token);
 
     setInterval(() => {
-      this.getUserContactsOnlineStatus(this.user.api_token);
+      this.getUserContacts(this.user.api_token);
     }, 30000);
 
-    this.getUserContacts();
 
     for(var i = 0; i < this.contactNotificationsProp.length; i++) {
       this.contactNotifications.push(this.contactNotificationsProp[i].contact_id);

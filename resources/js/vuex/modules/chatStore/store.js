@@ -5,7 +5,7 @@ const state = {
   currentContact: null,
   currentContactName: null,
   contactNotifications: [],
-  contactsOnlineStatus: null,
+  userContacts: null,
 };
 
 const getters = {

@@ -17,7 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:api')->get('contacts-online-status', 'ChatsController@getUserContactsOnlineStatus');
+Route::middleware('auth:api')->get('get-contacts', 'ChatsController@getUserContacts');
 
 Route::middleware('auth:api')->put('user/{user}/online', 'UserOnlineController');
 

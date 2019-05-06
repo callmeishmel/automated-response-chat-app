@@ -1807,7 +1807,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['user', 'contactNotificationsProp'],
@@ -1817,33 +1816,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       onlineStatus: null
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'currentContactName', 'contactNotifications', 'contactsOnlineStatus'])),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('chatStore', ['setNewContactInStore', 'removeFromContactNotifications', 'getUserContactsOnlineStatus']), {
-    getUserContacts: function getUserContacts() {
-      var _this = this;
-
-      axios.get('/user-contacts').then(function (response) {
-        _this.contacts = response.data;
-      });
-    },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'currentContactName', 'contactNotifications', 'userContacts'])),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('chatStore', ['setNewContactInStore', 'removeFromContactNotifications', 'getUserContacts']), {
     setNewContact: function setNewContact(contact) {
       this.setNewContactInStore(contact);
 
       if (this.contactNotifications.includes(contact.id)) {
-        this.removeFromContactNotifications(contact.name);
+        this.removeFromContactNotifications(contact.id);
       }
 
       axios.get('remove-contact-notification/' + contact.id).then(function () {});
     }
   }),
   mounted: function mounted() {
-    var _this2 = this;
+    var _this = this;
 
-    this.getUserContactsOnlineStatus(this.user.api_token);
+    this.getUserContacts(this.user.api_token);
     setInterval(function () {
-      _this2.getUserContactsOnlineStatus(_this2.user.api_token);
+      _this.getUserContacts(_this.user.api_token);
     }, 30000);
-    this.getUserContacts();
 
     for (var i = 0; i < this.contactNotificationsProp.length; i++) {
       this.contactNotifications.push(this.contactNotificationsProp[i].contact_id);
@@ -2066,6 +2057,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['messages', 'user'],
@@ -2084,8 +2089,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'currentContactName', 'contactNotifications'])),
-  methods: {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'currentContactName', 'contactNotifications', 'userContacts'])),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('chatStore', ['setNewContactInStore', 'removeFromContactNotifications', 'getUserContacts']), {
     sendMessage: function sendMessage(messageIndex, response, messageId) {
       this.messages[messageIndex].replied = 1;
       this.$emit('messagesent', {
@@ -2094,6 +2099,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         parent_message_id: messageId,
         recipient_id: this.currentContact
       });
+    },
+    setNewContact: function setNewContact(contact) {
+      this.setNewContactInStore(contact);
+
+      if (this.contactNotifications.includes(contact.id)) {
+        this.removeFromContactNotifications(contact.id);
+      }
+
+      axios.get('remove-contact-notification/' + contact.id).then(function () {});
     },
     toggleNavbar: function toggleNavbar() {
       this.navbarHidden = !this.navbarHidden;
@@ -2121,7 +2135,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         $(".chat-content").addClass("col-8 col-md-10");
       }
     }
-  }
+  })
 });
 
 /***/ }),
@@ -48418,7 +48432,7 @@ var render = function() {
     [
       _c("h4", [_vm._v(_vm._s(_vm.user.portfolio) + " Contacts")]),
       _vm._v(" "),
-      _vm._l(_vm.contacts, function(contact) {
+      _vm._l(_vm.userContacts, function(contact) {
         return _c(
           "div",
           {
@@ -48448,7 +48462,7 @@ var render = function() {
               ]
             }),
             _vm._v(" " + _vm._s(contact.name) + "\n      "),
-            _vm.contactsOnlineStatus !== null
+            contact.status !== null
               ? _c(
                   "div",
                   {
@@ -48456,7 +48470,7 @@ var render = function() {
                     staticStyle: { opacity: ".6" }
                   },
                   [
-                    _vm.contactsOnlineStatus[contact.id] === "online"
+                    contact.status === "online"
                       ? _c("i", {
                           staticClass: "fas fa-user-circle text-light"
                         })
@@ -48686,21 +48700,62 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticStyle: { position: "relative" } }, [
-    _vm.contactNotifications.length > 0
-      ? _c(
-          "div",
-          {
-            staticClass: "p-1 ml-1 alert-danger h1 float-right contact-blink",
-            staticStyle: {
-              cursor: "pointer",
-              position: "fixed",
-              bottom: "-3px"
-            },
-            on: { click: _vm.toggleContacts }
-          },
-          [_c("i", { staticClass: "fas fa-comments" })]
-        )
-      : _vm._e(),
+    _c(
+      "div",
+      {
+        staticClass: "position-fixed",
+        staticStyle: {
+          right: "15px",
+          "z-index": "9999",
+          "background-color": "#fff"
+        }
+      },
+      _vm._l(_vm.contactNotifications, function(contactId) {
+        return _vm.contactNotifications.length > 0
+          ? _c(
+              "div",
+              {
+                staticClass: "p-1 ml-1 alert-danger float-right contact-blink",
+                staticStyle: { cursor: "pointer" }
+              },
+              _vm._l(_vm.userContacts, function(contact) {
+                return contact.id === contactId
+                  ? _c(
+                      "div",
+                      {
+                        on: {
+                          click: function($event) {
+                            return _vm.setNewContact({
+                              id: contact.id,
+                              name: contact.name
+                            })
+                          }
+                        }
+                      },
+                      [
+                        contact.status === "online"
+                          ? _c("div", [
+                              _vm._v(
+                                "\n            " + _vm._s(contact.name) + " "
+                              ),
+                              _c("i", { staticClass: "fas fa-user-circle" })
+                            ])
+                          : _c("div", [
+                              _vm._v(
+                                "\n            " + _vm._s(contact.name) + " "
+                              ),
+                              _c("i", { staticClass: "fas fa-minus-circle" })
+                            ])
+                      ]
+                    )
+                  : _vm._e()
+              }),
+              0
+            )
+          : _vm._e()
+      }),
+      0
+    ),
     _vm._v(" "),
     _c(
       "div",
@@ -67579,8 +67634,9 @@ var app = new Vue({
     addMessage: function addMessage(message) {
       message.created_at = Vue.moment.now();
       this.messages.push(message);
-      axios.post('/messages', message).then(function (response) {
-        console.log(response.data);
+      axios.post('/messages', message).then(function (response) {// console.log(response.data);
+      });
+      axios.get('add-contact-notification/' + message.recipient_id).then(function (response) {// console.log('notification', response.data);
       });
     },
     playSound: function playSound(sound) {
@@ -68024,15 +68080,9 @@ var mutations = {
     var contactIndex = state.contactNotifications.indexOf(payload);
     state.contactNotifications.splice(contactIndex, 1);
   },
-  getUserContactsOnlineStatus: function getUserContactsOnlineStatus(state, payload) {
-    axios.get('/api/contacts-online-status?api_token=' + payload, {}).then(function (response) {
-      var contactsArray = {};
-
-      for (var i in response.data) {
-        contactsArray[response.data[i]['id']] = response.data[i]['status'];
-      }
-
-      state.contactsOnlineStatus = contactsArray;
+  getUserContacts: function getUserContacts(state, payload) {
+    axios.get('/api/get-contacts?api_token=' + payload, {}).then(function (response) {
+      state.userContacts = response.data;
     });
   }
 };
@@ -68057,7 +68107,7 @@ var state = {
   currentContact: null,
   currentContactName: null,
   contactNotifications: [],
-  contactsOnlineStatus: null
+  userContacts: null
 };
 var getters = {};
 var module = {

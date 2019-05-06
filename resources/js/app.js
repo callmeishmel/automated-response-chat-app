@@ -191,7 +191,11 @@ const app = new Vue({
             this.messages.push(message);
 
             axios.post('/messages', message).then(response => {
-              console.log(response.data);
+              // console.log(response.data);
+            });
+
+            axios.get('add-contact-notification/' + message.recipient_id).then(response => {
+              // console.log('notification', response.data);
             });
         },
 

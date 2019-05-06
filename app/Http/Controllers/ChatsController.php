@@ -26,7 +26,7 @@ class ChatsController extends Controller
   public function index()
   {
     $cannedMessages = CannedMessage::all();
-    $contactNotifications = ContactNotification::select('contact_id')->where('customer_id', '=', Auth::user()->id)->get();
+    $contactNotifications = ContactNotification::select('contact_id')->where('customer_id', '=', Auth::user()->id)->groupBy('contact_id')->get();
     return view('chat', compact(['cannedMessages', 'contactNotifications']));
   }
 
@@ -42,7 +42,7 @@ class ChatsController extends Controller
     $messages = Message::whereRaw("
       (messages.recipient_id = $contactId AND messages.user_id = $user->id OR
       messages.recipient_id = $user->id AND messages.user_id = $contactId)
-    ")->with('user')->limit(50)->get();
+    ")->with('user')->get();
 
     foreach($messages as $message) {
       if(!is_null($message->canned_message_id)) {
@@ -73,12 +73,6 @@ class ChatsController extends Controller
       'canned_message_id' => $request->input('canned_message_id'),
       'recipient_id' => $request->input('recipient_id')
     ]);
-
-    $recipient = User::where(['id' => $request->input('recipient_id')])->first();
-
-    if($recipient->status === 'offline') {
-      $this->addContactNotification($request->input('recipient_id'));
-    }
 
     broadcast(new MessageSent($user, $message))->toOthers();
 
@@ -130,7 +124,15 @@ class ChatsController extends Controller
   {
     $user = Auth::user();
 
-    $userContacts = User::where('id', '!=', $user->id);
+    $userContacts = User::select([
+      'id',
+      'name',
+      'email',
+      'portfolio',
+      'position',
+      'status',
+      'team'
+      ])->where('id', '!=', $user->id);
 
     // Admins can see all contacts
     if($user->position !== 'Admin') {
@@ -140,18 +142,6 @@ class ChatsController extends Controller
     $userContacts = $userContacts->orderBy('name', 'ASC')->get();
 
     return $userContacts;
-  }
-
-  /**
-  * Get all users online status
-  *
-  * @param  int $id
-  * @return json
-  */
-  public function getUserContactsOnlineStatus() {
-
-    return User::select(['id','status'])->get();
-
   }
 
   /**
