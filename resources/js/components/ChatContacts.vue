@@ -77,7 +77,9 @@ export default {
         this.removeFromContactNotifications(contact.id);
       }
 
-      axios.get('remove-contact-notification/' + contact.id).then(() => {});
+      axios.get('remove-contact-notification/' + contact.id).then(() => {
+        axios.get('set-user-current-contact/' + this.currentContact);
+      });
     }
 
   },

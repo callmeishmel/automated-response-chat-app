@@ -114,6 +114,19 @@ class ChatsController extends Controller
     return ['user_id' => Auth::user()->id, 'api_token' => Auth::user()->api_token];
   }
 
+  public function setUserCurrentContact($contactId)
+  {
+    $user = Auth::user();
+
+    $user->current_contact = $contactId;
+
+    if($user->save()) {
+      return ['success' => true, 'msg' => 'Current contact succesfully updated.'];
+    } else {
+      return ['success' => false, 'msg' => 'Current contact update failed.'];
+    }
+  }
+
   /**
   * Get responses for a canned message
   *

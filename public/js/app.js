@@ -1819,21 +1819,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'currentContactName', 'contactNotifications', 'userContacts'])),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('chatStore', ['setNewContactInStore', 'removeFromContactNotifications', 'getUserContacts']), {
     setNewContact: function setNewContact(contact) {
+      var _this = this;
+
       this.setNewContactInStore(contact);
 
       if (this.contactNotifications.includes(contact.id)) {
         this.removeFromContactNotifications(contact.id);
       }
 
-      axios.get('remove-contact-notification/' + contact.id).then(function () {});
+      axios.get('remove-contact-notification/' + contact.id).then(function () {
+        axios.get('set-user-current-contact/' + _this.currentContact);
+      });
     }
   }),
   mounted: function mounted() {
-    var _this = this;
+    var _this2 = this;
 
     this.getUserContacts(this.user.api_token);
     setInterval(function () {
-      _this.getUserContacts(_this.user.api_token);
+      _this2.getUserContacts(_this2.user.api_token);
     }, 30000);
 
     for (var i = 0; i < this.contactNotificationsProp.length; i++) {
@@ -2086,6 +2090,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         setTimeout(function () {
           $('.chat-messages').scrollTop($('.chat-messages')[0].scrollHeight);
         }, 0);
+      }
+    },
+    // Not proud of this one but this is the one quick way to clear the current
+    // contact's notifications that cannot be caught by clicking on the contact
+    // name on the sidebar
+    'userContacts': {
+      handler: function handler(contacts) {
+        if (this.user.current_contact !== null) {
+          for (var index in this.userContacts) {
+            if (this.userContacts[index].id === this.user.current_contact) {
+              this.setNewContact({
+                id: this.user.current_contact,
+                name: this.userContacts[index].name
+              });
+            }
+          }
+        }
       }
     }
   },
@@ -67706,7 +67727,7 @@ if (token) {
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: "1dba86919d5a0c3e0bbf",
+  key: "0635d848acd6511fc6af",
   cluster: "us3",
   encrypted: true
 });

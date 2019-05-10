@@ -109,6 +109,22 @@
               $('.chat-messages').scrollTop($('.chat-messages')[0].scrollHeight);
           }, 0);
         }
+      },
+
+      // Not proud of this one but this is the one quick way to clear the current
+      // contact's notifications that cannot be caught by clicking on the contact
+      // name on the sidebar
+      'userContacts': {
+        handler: function(contacts) {
+          if(this.user.current_contact !== null) {
+
+            for(let index in this.userContacts) {
+              if(this.userContacts[index].id === this.user.current_contact) {
+                this.setNewContact({id:this.user.current_contact, name:this.userContacts[index].name});
+              }
+            }
+          }
+        }
       }
     },
 
