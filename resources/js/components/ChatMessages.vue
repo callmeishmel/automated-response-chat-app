@@ -116,7 +116,7 @@
       // name on the sidebar
       'userContacts': {
         handler: function(contacts) {
-          if(this.user.current_contact !== null) {
+          if(this.user.current_contact !== null && this.currentContact === null) {
 
             for(let index in this.userContacts) {
               if(this.userContacts[index].id === this.user.current_contact) {
