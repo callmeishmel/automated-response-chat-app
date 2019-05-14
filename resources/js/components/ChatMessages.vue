@@ -125,6 +125,14 @@
             }
           }
         }
+      },
+
+      'currentContact': {
+        handler: function(newContact, oldContact){
+          if(oldContact !== null) {
+            axios.get('remove-contact-notification/' + oldContact);
+          }
+        }
       }
     },
 
@@ -163,8 +171,6 @@
           if(this.contactNotifications.includes(contact.id)) {
             this.removeFromContactNotifications(contact.id);
           }
-
-          axios.get('remove-contact-notification/' + contact.id).then(() => {});
         },
 
         toggleNavbar() {

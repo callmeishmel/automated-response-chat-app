@@ -187,7 +187,7 @@ class ChatsController extends Controller
 
     $contactNotification = ContactNotification::where([
       'customer_id' => $user->id,
-      'contact_id' => $contactId
+      'contact_id' => (int)$contactId
     ])->delete();
 
     return $contactNotification;
