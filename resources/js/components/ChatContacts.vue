@@ -4,6 +4,7 @@
     <h4>{{ user.portfolio }} Contacts</h4>
 
     <div
+      style="font-size: 1.2em;"
       class="pl-1 contact-link"
       :class="[
         currentContact === contact.id ? 'contact-link-active': '',
@@ -20,11 +21,11 @@
         ></i> {{ contact.name }}
         <div
           class="float-right pr-1"
-          style="opacity: .6;"
           v-if="contact.status !== null">
           <i
             v-if="contact.status === 'online'"
-            class="fas fa-user-circle text-light">
+            class="fas"
+            :class="contact.active ? 'fa-grin-alt text-success' : 'fa-meh text-warning'">
           </i>
           <i
             v-else
@@ -97,6 +98,14 @@ export default {
       this.contactNotifications.push(this.contactNotificationsProp[i].contact_id);
     }
 
+  },
+
+  onIdle() {
+    axios.get('user/' + this.user.id + '/idle');
+  },
+
+  onActive() {
+    axios.get('user/' + this.user.id + '/active');
   }
 
 }

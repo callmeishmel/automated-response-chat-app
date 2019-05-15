@@ -1807,6 +1807,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['user', 'contactNotificationsProp'],
@@ -1843,6 +1844,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     for (var i = 0; i < this.contactNotificationsProp.length; i++) {
       this.contactNotifications.push(this.contactNotificationsProp[i].contact_id);
     }
+  },
+  onIdle: function onIdle() {
+    axios.get('user/' + this.user.id + '/idle');
+  },
+  onActive: function onActive() {
+    axios.get('user/' + this.user.id + '/active');
   }
 });
 
@@ -2218,27 +2225,28 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['logoutRoute'],
+  props: ['logoutRoute', 'sessionTimeInSeconds'],
   data: function data() {
     return {
-      secondsUntilAutoLogout: 60,
-      appIsIdle: false
+      currentSessionTime: this.sessionTimeInSeconds,
+      secondsUntilAutoLogout: 10,
+      sessionExpiring: false
     };
   },
   methods: {
     continueSession: function continueSession() {
-      this.appIsIdle = false;
-      this.secondsUntilAutoLogout = 60;
+      this.sessionExpiring = false;
+      this.currentSessionTime = this.sessionTimeInSeconds;
+      this.secondsUntilAutoLogout = 10;
     },
     sessionLogout: function sessionLogout() {
-      this.appIsIdle = false;
       location.replace(this.logoutRoute);
     },
     timeoutCountdown: function timeoutCountdown() {
       var _this = this;
 
       setInterval(function () {
-        if (_this.appIsIdle) {
+        if (_this.sessionExpiring) {
           _this.secondsUntilAutoLogout--;
         }
 
@@ -2246,15 +2254,26 @@ __webpack_require__.r(__webpack_exports__);
           location.replace(_this.logoutRoute);
         }
       }, 1000);
+    },
+    sessionCountdown: function sessionCountdown() {
+      var _this2 = this;
+
+      setInterval(function () {
+        if (_this2.currentSessionTime < 1) {
+          _this2.sessionExpiring = true;
+        } else {
+          _this2.currentSessionTime--;
+        }
+      }, 1000);
     }
   },
   mounted: function mounted() {
+    if (!this.sessionExpiring) {
+      this.sessionCountdown();
+    }
+
     this.timeoutCountdown();
-  },
-  onIdle: function onIdle() {
-    this.appIsIdle = true;
-  },
-  onActive: function onActive() {}
+  }
 });
 
 /***/ }),
@@ -48470,6 +48489,7 @@ var render = function() {
                 ? "contact-blink"
                 : ""
             ],
+            staticStyle: { "font-size": "1.2em" },
             on: {
               click: function($event) {
                 return _vm.setNewContact({ id: contact.id, name: contact.name })
@@ -48489,22 +48509,18 @@ var render = function() {
             }),
             _vm._v(" " + _vm._s(contact.name) + "\n      "),
             contact.status !== null
-              ? _c(
-                  "div",
-                  {
-                    staticClass: "float-right pr-1",
-                    staticStyle: { opacity: ".6" }
-                  },
-                  [
-                    contact.status === "online"
-                      ? _c("i", {
-                          staticClass: "fas fa-user-circle text-light"
-                        })
-                      : _c("i", {
-                          staticClass: "fas fa-minus-circle text-secondary"
-                        })
-                  ]
-                )
+              ? _c("div", { staticClass: "float-right pr-1" }, [
+                  contact.status === "online"
+                    ? _c("i", {
+                        staticClass: "fas",
+                        class: contact.active
+                          ? "fa-grin-alt text-success"
+                          : "fa-meh text-warning"
+                      })
+                    : _c("i", {
+                        staticClass: "fas fa-minus-circle text-secondary"
+                      })
+                ])
               : _vm._e()
           ]
         )
@@ -48995,7 +49011,7 @@ var render = function() {
     "div",
     [
       _c("transition", { attrs: { name: "modal" } }, [
-        _vm.appIsIdle
+        _vm.sessionExpiring
           ? _c("div", { staticClass: "modal-mask" }, [
               _c("div", { staticClass: "modal-wrapper" }, [
                 _c("div", { staticClass: "modal-container p-1" }, [
@@ -67513,8 +67529,7 @@ Vue.use(__webpack_require__(/*! vue-moment */ "./node_modules/vue-moment/dist/vu
 var eventsHub = new Vue();
 var idleViewOptions = {
   eventEmitter: eventsHub,
-  idleTime: $('#app')[0].attributes['session-timeout'].value,
-  store: _vuex_store_js__WEBPACK_IMPORTED_MODULE_2__["default"]
+  idleTime: 120000
 };
 Vue.use(idle_vue__WEBPACK_IMPORTED_MODULE_0___default.a, idleViewOptions); // Vuex stores
 

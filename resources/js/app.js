@@ -20,8 +20,7 @@ const eventsHub = new Vue();
 
 const idleViewOptions = {
   eventEmitter: eventsHub,
-  idleTime: $('#app')[0].attributes['session-timeout'].value,
-  store
+  idleTime: 120000
 }
 Vue.use(IdleVue, idleViewOptions);
 

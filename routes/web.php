@@ -25,6 +25,9 @@ Route::get('user-contacts', 'ChatsController@getUserContacts');
 Route::get('add-contact-notification/{contactId}', 'ChatsController@addContactNotification');
 Route::get('remove-contact-notification/{contactId}', 'ChatsController@removeContactNotification');
 
+Route::get('user/{user}/idle', 'UserIdleController@setUserIdle');
+Route::get('user/{user}/active', 'UserIdleController@setUserActive');
+
 Route::get('canned-message-responses/{id?}', 'ChatsController@getCannedMessageResponses');
 
 Route::get('users', 'AdminController@createUserPage');

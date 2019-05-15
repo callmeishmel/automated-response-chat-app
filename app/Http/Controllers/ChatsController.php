@@ -144,6 +144,7 @@ class ChatsController extends Controller
       'portfolio',
       'position',
       'status',
+      'active',
       'team'
       ])->where('id', '!=', $user->id);
 

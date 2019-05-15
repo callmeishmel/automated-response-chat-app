@@ -3,7 +3,7 @@
   <div>
 
     <transition name="modal">
-      <div v-if="appIsIdle" class="modal-mask">
+      <div v-if="sessionExpiring" class="modal-mask">
         <div class="modal-wrapper">
           <div class="modal-container p-1">
 
@@ -44,31 +44,32 @@
 
 export default {
 
-  props: ['logoutRoute'],
+  props: ['logoutRoute', 'sessionTimeInSeconds'],
 
   data() {
     return {
-      secondsUntilAutoLogout: 60,
-      appIsIdle: false
+      currentSessionTime: this.sessionTimeInSeconds,
+      secondsUntilAutoLogout: 10,
+      sessionExpiring: false
     }
   },
 
   methods: {
 
     continueSession() {
-      this.appIsIdle = false;
-      this.secondsUntilAutoLogout = 60;
+      this.sessionExpiring = false;
+      this.currentSessionTime = this.sessionTimeInSeconds;
+      this.secondsUntilAutoLogout = 10;
     },
 
     sessionLogout() {
-      this.appIsIdle = false;
       location.replace(this.logoutRoute);
     },
 
     timeoutCountdown() {
       setInterval(() => {
 
-        if(this.appIsIdle) {
+        if(this.sessionExpiring) {
           this.secondsUntilAutoLogout--;
         }
 
@@ -79,19 +80,25 @@ export default {
       }, 1000);
     },
 
+    sessionCountdown() {
+      setInterval(() => {
+        if(this.currentSessionTime < 1) {
+          this.sessionExpiring = true;
+        } else {
+          this.currentSessionTime--;
+        }
+      }, 1000);
+    }
+
   },
 
   mounted() {
 
+    if(!this.sessionExpiring) {
+      this.sessionCountdown();
+    }
+
     this.timeoutCountdown();
-
-  },
-
-  onIdle() {
-    this.appIsIdle = true;
-  },
-
-  onActive() {
 
   }
 

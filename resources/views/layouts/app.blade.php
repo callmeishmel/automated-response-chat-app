@@ -55,11 +55,12 @@
 
 </head>
 <body>
-    <div id="app" user-auth="{{ Auth::check() }}" session-timeout="{{ env('SESSION_LIFETIME') * 1000 }}">
+    <div id="app" user-auth="{{ Auth::check() }}">
 
       @if(Auth::check())
       <vue-session-component
-        logout-route="{{ route('logout') }}">
+        logout-route="{{ route('logout') }}"
+        session-time-in-seconds="{{ env('SESSION_LIFETIME') }}">
       </vue-session-component>
       @endif
 
