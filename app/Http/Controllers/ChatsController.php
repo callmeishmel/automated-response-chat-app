@@ -114,11 +114,15 @@ class ChatsController extends Controller
     return ['user_id' => Auth::user()->id, 'api_token' => Auth::user()->api_token];
   }
 
-  public function setUserCurrentContact($contactId)
+  public function setUserCurrentContact($contactId = null)
   {
     $user = Auth::user();
 
-    $user->current_contact = $contactId;
+    if(is_null($contactId)) {
+      $user->current_contact = null;
+    } else {
+      $user->current_contact = $contactId;
+    }
 
     if($user->save()) {
       return ['success' => true, 'msg' => 'Current contact succesfully updated.'];

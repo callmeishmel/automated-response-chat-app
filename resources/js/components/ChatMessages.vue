@@ -2,48 +2,62 @@
 
   <div style="position: relative;">
 
-      <div class="position-fixed" style="right: 15px; z-index:9999; background-color: #fff;">
+      <div class="background-white">
 
-        <div
-          v-if="contactNotifications.length > 0"
-          v-for="contactId in contactNotifications"
-          style="cursor:pointer;"
-          class="p-1 ml-1 alert-danger float-right contact-blink">
+        <div class="position-fixed mt-1" style="right: 15px; z-index:9999; background-color: #fff;">
+
           <div
-            v-for="contact in userContacts"
-            @click="setNewContact({id:contact.id, name:contact.name})"
-            v-if="contact.id === contactId">
-            <div v-if="contact.status === 'online'">
-              {{ contact.name }} <i class="fas fa-user-circle"></i>
-            </div>
-            <div v-else>
-              {{ contact.name }} <i class="fas fa-minus-circle"></i>
+            v-if="currentContact !== null"
+            class="text-dark h5 pr-1 ml-1 mt-1 float-right">
+            <i
+              @click="setNewContact({id:null, name:null})"
+              class="fas fa-times"></i>
+          </div>
+
+          <div
+            v-if="contactNotifications.length > 0"
+            v-for="contactId in contactNotifications"
+            style="cursor:pointer;"
+            class="p-1 ml-1 alert-danger float-right contact-blink">
+            <div
+              v-for="contact in userContacts"
+              @click="setNewContact({id:contact.id, name:contact.name})"
+              v-if="contact.id === contactId">
+              <div v-if="contact.status === 'online'">
+                {{ contact.name }} <i class="fas fa-user-circle"></i>
+              </div>
+              <div v-else>
+                {{ contact.name }} <i class="fas fa-minus-circle"></i>
+              </div>
             </div>
           </div>
+
+        </div>
+
+        <div class="position-fixed py-1 px-2 mt-1 rounded" style="background-color: #fff; z-index: 999;">
+          <button class="btn btn-sm btn-warning rounded-0 toggle-contacts" @click.prevent="toggleContacts">
+            <i
+              class="fas fa-arrow-left"
+              :class="contactsHidden ? 'fa-arrow-right' : 'fa-arrow-left'"></i>
+          </button>
+
+          <button class="btn btn-sm btn-primary mr-1 rounded-0" @click.prevent="toggleNavbar">
+            <i
+              class="fas"
+              :class="navbarHidden ? 'fa-arrow-down' : 'fa-arrow-up'"></i>
+          </button>
+
+          <div
+            v-if="currentContactName !== null"
+            style="background-color: #3F0E40;"
+            class="p-1 text-light float-right">
+            <i class="fas fa-comment-dots"></i> Chatting with {{ currentContactName }}
+          </div>
+
         </div>
 
       </div>
 
-      <div class="position-fixed py-1 px-2 mt-1 rounded" style="background-color: #fff; z-index: 999;">
-        <button class="btn btn-sm btn-warning rounded-0 toggle-contacts" @click.prevent="toggleContacts">
-          <i
-            class="fas fa-arrow-left"
-            :class="contactsHidden ? 'fa-arrow-right' : 'fa-arrow-left'"></i>
-        </button>
-
-        <button class="btn btn-sm btn-primary mr-1 rounded-0" @click.prevent="toggleNavbar">
-          <i
-            class="fas"
-            :class="navbarHidden ? 'fa-arrow-down' : 'fa-arrow-up'"></i>
-        </button>
-
-        <div
-          v-if="currentContactName !== null"
-          style="background-color: #3F0E40;"
-          class="p-1 text-light float-right">
-          <i class="fas fa-comment-dots"></i> Chatting with {{ currentContactName }}
-        </div>
-      </div>
 
       <div class="pt-5" v-if="currentContact !== null">
 
@@ -167,6 +181,9 @@
         },
 
         setNewContact(contact) {
+          if(contact.id === null) {
+            axios.get('/set-user-current-contact/');
+          }
           this.setNewContactInStore(contact);
           if(this.contactNotifications.includes(contact.id)) {
             this.removeFromContactNotifications(contact.id);

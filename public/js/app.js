@@ -1929,6 +1929,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['user', 'cannedMessages'],
@@ -2082,6 +2084,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['messages', 'user'],
@@ -2136,6 +2152,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     setNewContact: function setNewContact(contact) {
+      if (contact.id === null) {
+        axios.get('/set-user-current-contact/');
+      }
+
       this.setNewContactInStore(contact);
 
       if (this.contactNotifications.includes(contact.id)) {
@@ -48644,6 +48664,7 @@ var render = function() {
                   id: "btn-input",
                   type: "text",
                   name: "message",
+                  autocomplete: "off",
                   placeholder: "Type your message here..."
                 },
                 domProps: { value: _vm.newMessage },
@@ -48696,7 +48717,11 @@ var render = function() {
         _vm.selectedCannedMessage !== null
           ? _c(
               "div",
-              { staticClass: "col-md-12 p-3 text-light" },
+              {
+                staticClass:
+                  "px-3 pt-3 pb-2 text-light position-absolute rounded",
+                staticStyle: { top: "-67px", background: "#b29fb3" }
+              },
               [
                 _c("label", { staticClass: "h5" }, [
                   _vm._v("Possible Responses")
@@ -48742,127 +48767,155 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticStyle: { position: "relative" } }, [
-    _c(
-      "div",
-      {
-        staticClass: "position-fixed",
-        staticStyle: {
-          right: "15px",
-          "z-index": "9999",
-          "background-color": "#fff"
-        }
-      },
-      _vm._l(_vm.contactNotifications, function(contactId) {
-        return _vm.contactNotifications.length > 0
-          ? _c(
-              "div",
-              {
-                staticClass: "p-1 ml-1 alert-danger float-right contact-blink",
-                staticStyle: { cursor: "pointer" }
-              },
-              _vm._l(_vm.userContacts, function(contact) {
-                return contact.id === contactId
-                  ? _c(
-                      "div",
-                      {
-                        on: {
-                          click: function($event) {
-                            return _vm.setNewContact({
-                              id: contact.id,
-                              name: contact.name
-                            })
-                          }
-                        }
-                      },
-                      [
-                        contact.status === "online"
-                          ? _c("div", [
-                              _vm._v(
-                                "\n            " + _vm._s(contact.name) + " "
-                              ),
-                              _c("i", { staticClass: "fas fa-user-circle" })
-                            ])
-                          : _c("div", [
-                              _vm._v(
-                                "\n            " + _vm._s(contact.name) + " "
-                              ),
-                              _c("i", { staticClass: "fas fa-minus-circle" })
-                            ])
-                      ]
-                    )
-                  : _vm._e()
-              }),
-              0
-            )
-          : _vm._e()
-      }),
-      0
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      {
-        staticClass: "position-fixed py-1 px-2 mt-1 rounded",
-        staticStyle: { "background-color": "#fff", "z-index": "999" }
-      },
-      [
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-sm btn-warning rounded-0 toggle-contacts",
-            on: {
-              click: function($event) {
-                $event.preventDefault()
-                return _vm.toggleContacts($event)
-              }
-            }
-          },
-          [
-            _c("i", {
-              staticClass: "fas fa-arrow-left",
-              class: _vm.contactsHidden ? "fa-arrow-right" : "fa-arrow-left"
-            })
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-sm btn-primary mr-1 rounded-0",
-            on: {
-              click: function($event) {
-                $event.preventDefault()
-                return _vm.toggleNavbar($event)
-              }
-            }
-          },
-          [
-            _c("i", {
-              staticClass: "fas",
-              class: _vm.navbarHidden ? "fa-arrow-down" : "fa-arrow-up"
-            })
-          ]
-        ),
-        _vm._v(" "),
-        _vm.currentContactName !== null
-          ? _c(
-              "div",
-              {
-                staticClass: "p-1 text-light float-right",
-                staticStyle: { "background-color": "#3F0E40" }
-              },
-              [
-                _c("i", { staticClass: "fas fa-comment-dots" }),
-                _vm._v(
-                  " Chatting with " +
-                    _vm._s(_vm.currentContactName) +
-                    "\n      "
+    _c("div", { staticClass: "background-white" }, [
+      _c(
+        "div",
+        {
+          staticClass: "position-fixed mt-1",
+          staticStyle: {
+            right: "15px",
+            "z-index": "9999",
+            "background-color": "#fff"
+          }
+        },
+        [
+          _vm.currentContact !== null
+            ? _c(
+                "div",
+                { staticClass: "text-dark h5 pr-1 ml-1 mt-1 float-right" },
+                [
+                  _c("i", {
+                    staticClass: "fas fa-times",
+                    on: {
+                      click: function($event) {
+                        return _vm.setNewContact({ id: null, name: null })
+                      }
+                    }
+                  })
+                ]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm._l(_vm.contactNotifications, function(contactId) {
+            return _vm.contactNotifications.length > 0
+              ? _c(
+                  "div",
+                  {
+                    staticClass:
+                      "p-1 ml-1 alert-danger float-right contact-blink",
+                    staticStyle: { cursor: "pointer" }
+                  },
+                  _vm._l(_vm.userContacts, function(contact) {
+                    return contact.id === contactId
+                      ? _c(
+                          "div",
+                          {
+                            on: {
+                              click: function($event) {
+                                return _vm.setNewContact({
+                                  id: contact.id,
+                                  name: contact.name
+                                })
+                              }
+                            }
+                          },
+                          [
+                            contact.status === "online"
+                              ? _c("div", [
+                                  _vm._v(
+                                    "\n              " +
+                                      _vm._s(contact.name) +
+                                      " "
+                                  ),
+                                  _c("i", { staticClass: "fas fa-user-circle" })
+                                ])
+                              : _c("div", [
+                                  _vm._v(
+                                    "\n              " +
+                                      _vm._s(contact.name) +
+                                      " "
+                                  ),
+                                  _c("i", {
+                                    staticClass: "fas fa-minus-circle"
+                                  })
+                                ])
+                          ]
+                        )
+                      : _vm._e()
+                  }),
+                  0
                 )
-              ]
-            )
-          : _vm._e()
-      ]
-    ),
+              : _vm._e()
+          })
+        ],
+        2
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "position-fixed py-1 px-2 mt-1 rounded",
+          staticStyle: { "background-color": "#fff", "z-index": "999" }
+        },
+        [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-sm btn-warning rounded-0 toggle-contacts",
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.toggleContacts($event)
+                }
+              }
+            },
+            [
+              _c("i", {
+                staticClass: "fas fa-arrow-left",
+                class: _vm.contactsHidden ? "fa-arrow-right" : "fa-arrow-left"
+              })
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-sm btn-primary mr-1 rounded-0",
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.toggleNavbar($event)
+                }
+              }
+            },
+            [
+              _c("i", {
+                staticClass: "fas",
+                class: _vm.navbarHidden ? "fa-arrow-down" : "fa-arrow-up"
+              })
+            ]
+          ),
+          _vm._v(" "),
+          _vm.currentContactName !== null
+            ? _c(
+                "div",
+                {
+                  staticClass: "p-1 text-light float-right",
+                  staticStyle: { "background-color": "#3F0E40" }
+                },
+                [
+                  _c("i", { staticClass: "fas fa-comment-dots" }),
+                  _vm._v(
+                    " Chatting with " +
+                      _vm._s(_vm.currentContactName) +
+                      "\n        "
+                  )
+                ]
+              )
+            : _vm._e()
+        ]
+      )
+    ]),
     _vm._v(" "),
     _vm.currentContact !== null
       ? _c(

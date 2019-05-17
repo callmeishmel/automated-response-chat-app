@@ -20,7 +20,7 @@ Route::get('messages/{contactId?}', 'ChatsController@fetchMessages');
 Route::post('messages', 'ChatsController@sendMessage');
 
 Route::get('current-app-user', 'ChatsController@getCurrentAppUser');
-Route::get('set-user-current-contact/{contactId}', 'ChatsController@setUserCurrentContact');
+Route::get('set-user-current-contact/{contactId?}', 'ChatsController@setUserCurrentContact');
 Route::get('user-contacts', 'ChatsController@getUserContacts');
 Route::get('add-contact-notification/{contactId}', 'ChatsController@addContactNotification');
 Route::get('remove-contact-notification/{contactId}', 'ChatsController@removeContactNotification');

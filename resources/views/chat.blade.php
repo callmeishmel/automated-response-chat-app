@@ -12,7 +12,7 @@
 
   <div class="col-8 col-md-10 p-0 chat-content">
 
-    <div class="chat-messages px-2" style="height:65%;">
+    <div class="chat-messages px-2" style="height:calc(100vh - 124px);">
       <chat-messages
         v-on:messagesent="addMessage"
         :messages="messages"
@@ -20,7 +20,9 @@
       ></chat-messages>
     </div>
 
-    <div class="chat-message-form p-3" style="height:35%;">
+    <div
+      class="chat-message-form p-3"
+      style="height: auto; position: absolute; bottom: 55px; width: 100%;">
       <chat-form
           v-on:messagesent="addMessage"
           :user="{{ Auth::user() }}"

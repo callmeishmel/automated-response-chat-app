@@ -28,6 +28,7 @@
             type="text"
             name="message"
             class="form-control input-sm"
+            autocomplete="off"
             placeholder="Type your message here..."
             v-model="newMessage"
             @keyup.enter="sendMessage">
@@ -44,7 +45,8 @@
       </div>
 
       <div
-        class="col-md-12 p-3 text-light"
+        class="px-3 pt-3 pb-2 text-light position-absolute rounded"
+        style="top: -67px; background: #b29fb3;"
         v-if="selectedCannedMessage !== null">
           <label class="h5">Possible Responses</label>
           <span
