@@ -75,9 +75,26 @@ body,html {
   -moz-animation:    CONTACT-BLINK 1s infinite; /* Fx 5+ */
   -o-animation:      CONTACT-BLINK 1s infinite; /* Opera 12+ */
   animation:         CONTACT-BLINK 1s infinite; /* IE 10+, Fx 29+ */
+
+
 }
 
 @-webkit-keyframes CONTACT-BLINK {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
   0%, 49% {
       background-color: rgba(255,0,0,.3);
   }

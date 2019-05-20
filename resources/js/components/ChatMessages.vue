@@ -2,9 +2,9 @@
 
   <div style="position: relative;">
 
-      <div class="background-white">
+      <div class="position-fixed col-12 p-1" style="z-index:9999; background-color: #e4dee4; height: 40px; border-bottom: 1px solid rgba(0,0,0,.05);">
 
-        <div class="position-fixed mt-1" style="right: 15px; z-index:9999; background-color: #fff;">
+        <div class="position-fixed" style="right: 15px;">
 
           <div
             v-if="currentContact !== null"
@@ -34,14 +34,14 @@
 
         </div>
 
-        <div class="position-fixed py-1 px-2 mt-1 rounded" style="background-color: #fff; z-index: 999;">
-          <button class="btn btn-sm btn-warning rounded-0 toggle-contacts" @click.prevent="toggleContacts">
+        <div class="position-fixed">
+          <button style="padding: 5.5px;" class="btn btn-sm btn-warning rounded-0 toggle-contacts" @click.prevent="toggleContacts">
             <i
               class="fas fa-arrow-left"
               :class="contactsHidden ? 'fa-arrow-right' : 'fa-arrow-left'"></i>
           </button>
 
-          <button class="btn btn-sm btn-primary mr-1 rounded-0" @click.prevent="toggleNavbar">
+          <button style="padding: 5.5px;" class="btn btn-sm btn-primary mr-1 rounded-0" @click.prevent="toggleNavbar">
             <i
               class="fas"
               :class="navbarHidden ? 'fa-arrow-down' : 'fa-arrow-up'"></i>
