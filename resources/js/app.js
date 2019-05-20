@@ -107,6 +107,20 @@ const app = new Vue({
               vm.playSound('/sounds/appointed.mp3');
               store.commit('chatStore/addToContactNotifications', e.message.user_id);
 
+              if(e.user.id !== vm.currentContact) {
+                Notification.requestPermission( permission => {
+                  let notification = new Notification('New message from ' + e.user.name + ' (' + e.user.portfolio + ')', {
+                    body: e.message.message, // content for the alert
+                    icon: "/img/favicon.png" // optional image url
+                  });
+
+                  // link to page on clicking the notification
+                  notification.onclick = () => {
+                    window.open(window.location.href);
+                  };
+                });
+              }
+
               // NOTE chat channel is in app/Events/MessageSent.php
               if(vm.currentContact === e.message.user_id) {
                 axios.get('/canned-message-responses/' + e.message.canned_message_id).

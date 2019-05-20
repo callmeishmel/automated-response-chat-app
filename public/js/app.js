@@ -67661,7 +67661,23 @@ var app = new Vue({
           // Play sound and add to notifications upon receiving message if
           // currentAppUser is not actively selecting sender
           vm.playSound('/sounds/appointed.mp3');
-          _vuex_store_js__WEBPACK_IMPORTED_MODULE_2__["default"].commit('chatStore/addToContactNotifications', e.message.user_id); // NOTE chat channel is in app/Events/MessageSent.php
+          _vuex_store_js__WEBPACK_IMPORTED_MODULE_2__["default"].commit('chatStore/addToContactNotifications', e.message.user_id);
+
+          if (e.user.id !== vm.currentContact) {
+            Notification.requestPermission(function (permission) {
+              var notification = new Notification('New message from ' + e.user.name + ' (' + e.user.portfolio + ')', {
+                body: e.message.message,
+                // content for the alert
+                icon: "/img/favicon.png" // optional image url
+
+              }); // link to page on clicking the notification
+
+              notification.onclick = function () {
+                window.open(window.location.href);
+              };
+            });
+          } // NOTE chat channel is in app/Events/MessageSent.php
+
 
           if (vm.currentContact === e.message.user_id) {
             axios.get('/canned-message-responses/' + e.message.canned_message_id).then(function (response) {
