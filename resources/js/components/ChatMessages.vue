@@ -2,7 +2,7 @@
 
   <div style="position: relative;">
 
-      <div class="position-fixed col-12 p-1" style="z-index:9999; background-color: #e4dee4; height: 40px; border-bottom: 1px solid rgba(0,0,0,.05);">
+      <div class="position-fixed col-12 p-1" style="z-index:999; background-color: #e4dee4; height: 40px; border-bottom: 1px solid rgba(0,0,0,.05);">
 
         <div class="position-fixed" style="right: 15px;">
 

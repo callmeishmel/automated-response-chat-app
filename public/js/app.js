@@ -1808,19 +1808,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['user', 'contactNotificationsProp'],
   data: function data() {
     return {
       contacts: null,
-      onlineStatus: null
+      onlineStatus: null,
+      contactSearch: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'currentContactName', 'contactNotifications', 'userContacts'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('chatStore', ['currentContact', 'currentContactName', 'contactNotifications', 'userContacts']), {
+    filteredContactList: function filteredContactList() {
+      var _this = this;
+
+      if (this.userContacts !== null) {
+        return this.userContacts.filter(function (contact) {
+          return contact.name.toLowerCase().includes(_this.contactSearch.toLowerCase());
+        });
+      }
+    }
+  }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('chatStore', ['setNewContactInStore', 'removeFromContactNotifications', 'getUserContacts']), {
     setNewContact: function setNewContact(contact) {
-      var _this = this;
+      var _this2 = this;
 
       this.setNewContactInStore(contact);
 
@@ -1829,16 +1850,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       axios.get('remove-contact-notification/' + contact.id).then(function () {
-        axios.get('set-user-current-contact/' + _this.currentContact);
+        axios.get('set-user-current-contact/' + _this2.currentContact);
       });
     }
   }),
   mounted: function mounted() {
-    var _this2 = this;
+    var _this3 = this;
 
     this.getUserContacts(this.user.api_token);
     setInterval(function () {
-      _this2.getUserContacts(_this2.user.api_token);
+      _this3.getUserContacts(_this3.user.api_token);
     }, 30000);
 
     for (var i = 0; i < this.contactNotificationsProp.length; i++) {
@@ -6755,7 +6776,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.contact-link {\n  border-bottom: 1px dotted rgba(255,255,255,.2);\n}\n.contact-link:hover {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n  cursor: pointer;\n}\n.contact-link-active {\n  background-color: rgba(0,0,0,.3);\n  color: #d9d9d9;\n}\n\n", ""]);
+exports.push([module.i, "\n.contact-link {\n    border-bottom: 1px dotted rgba(255,255,255,.2);\n}\n.contact-link:hover {\n    background-color: rgba(0,0,0,.3);\n    color: #d9d9d9;\n    cursor: pointer;\n}\n.contact-link-active {\n    background-color: rgba(0,0,0,.3);\n    color: #d9d9d9;\n}\n\n/* Bootstrap 4 text input with search icon */\n.has-search .form-control {\n    padding-left: 1.8rem;\n}\n.has-search .form-control-feedback {\n    position: absolute;\n    z-index: 2;\n    display: block;\n    width: 1.8rem;\n    height: 1.7rem;\n    line-height: 1.8rem;\n    text-align: center;\n    pointer-events: none;\n    color: #aaa;\n}\n\n", ""]);
 
 // exports
 
@@ -48497,7 +48518,33 @@ var render = function() {
     [
       _c("h4", [_vm._v(_vm._s(_vm.user.portfolio) + " Contacts")]),
       _vm._v(" "),
-      _vm._l(_vm.userContacts, function(contact) {
+      _c("div", { staticClass: "form-group has-search" }, [
+        _c("span", { staticClass: "fa fa-search form-control-feedback" }),
+        _vm._v(" "),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.contactSearch,
+              expression: "contactSearch"
+            }
+          ],
+          staticClass: "form-control form-control-sm py-2",
+          attrs: { placeholder: "Search" },
+          domProps: { value: _vm.contactSearch },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.contactSearch = $event.target.value
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _vm._l(_vm.filteredContactList, function(contact) {
         return _c(
           "div",
           {
@@ -48541,7 +48588,11 @@ var render = function() {
                         staticClass: "fas fa-minus-circle text-secondary"
                       })
                 ])
-              : _vm._e()
+              : _vm._e(),
+            _vm._v(" "),
+            _c("div", { staticStyle: { "font-size": ".8em" } }, [
+              _vm._v("\n        " + _vm._s(contact.latest_message) + "\n      ")
+            ])
           ]
         )
       })
@@ -48772,7 +48823,7 @@ var render = function() {
       {
         staticClass: "position-fixed col-12 p-1",
         staticStyle: {
-          "z-index": "9999",
+          "z-index": "999",
           "background-color": "#e4dee4",
           height: "40px",
           "border-bottom": "1px solid rgba(0,0,0,.05)"

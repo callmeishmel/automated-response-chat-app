@@ -159,7 +159,23 @@ class ChatsController extends Controller
 
     $userContacts = $userContacts->orderBy('name', 'ASC')->get();
 
-    return $userContacts;
+    foreach($userContacts as $contact) {
+      $latestMessage = Message::select(['message', 'created_at'])->
+      where(['recipient_id' => $user->id, 'user_id' => $contact->id])->
+      orderBy('created_at', 'desc')->first();
+
+      if($latestMessage) {
+        $contact['latest_message'] = $latestMessage->message;
+        $contact['latest_message_created_at'] = $latestMessage->created_at->timestamp;
+      } else {
+        $contact['latest_message'] = null;
+        $contact['latest_message_created_at'] = null;
+      }
+    }
+
+    $userContactsByLatestMessage = $userContacts->sortByDesc('latest_message_created_at');
+
+    return $userContactsByLatestMessage->values()->all();
   }
 
   /**

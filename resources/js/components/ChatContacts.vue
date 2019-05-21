@@ -3,6 +3,11 @@
 
     <h4>{{ user.portfolio }} Contacts</h4>
 
+    <div class="form-group has-search">
+      <span class="fa fa-search form-control-feedback"></span>
+      <input v-model="contactSearch" class="form-control form-control-sm py-2" placeholder="Search">
+    </div>
+
     <div
       style="font-size: 1.2em;"
       class="pl-1 contact-link"
@@ -11,7 +16,8 @@
         contactNotifications.includes(contact.id) && currentContact !== contact.id ? 'contact-blink' : ''
       ]"
       @click="setNewContact({id:contact.id, name:contact.name})"
-      v-for="contact in userContacts">
+      v-for="contact in filteredContactList">
+
       <i
         class="fa-circle"
         :class="[
@@ -33,6 +39,10 @@
           </i>
         </div>
 
+        <div class="" style="font-size: .8em;">
+          {{ contact.latest_message }}
+        </div>
+
     </div>
 
   </div>
@@ -49,7 +59,8 @@ export default {
   data() {
     return {
       contacts: null,
-      onlineStatus: null
+      onlineStatus: null,
+      contactSearch: ''
     }
   },
 
@@ -61,6 +72,14 @@ export default {
       'contactNotifications',
       'userContacts',
     ]),
+
+    filteredContactList() {
+      if(this.userContacts !== null) {
+        return this.userContacts.filter(contact => {
+          return contact.name.toLowerCase().includes(this.contactSearch.toLowerCase());
+        });
+      }
+    }
   },
 
   methods: {
@@ -126,6 +145,24 @@ export default {
   .contact-link-active {
     background-color: rgba(0,0,0,.3);
     color: #d9d9d9;
+  }
+
+/* Bootstrap 4 text input with search icon */
+
+  .has-search .form-control {
+    padding-left: 1.8rem;
+  }
+
+  .has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 1.8rem;
+    height: 1.7rem;
+    line-height: 1.8rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
   }
 
 </style>
