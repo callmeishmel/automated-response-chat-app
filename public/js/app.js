@@ -1818,6 +1818,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['user', 'contactNotificationsProp'],
@@ -2188,10 +2189,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       $(".navbar-laravel").toggle();
 
       if (!this.navbarHidden) {
+        $(".chat-messages").css({
+          height: 'calc(100vh - 124px)'
+        });
+        $(".chat-message-form").css({
+          bottom: '55px'
+        });
         $(".chat-sidebar").css({
           maxHeight: 'calc(100vh - 55px)'
         });
       } else {
+        $(".chat-messages").css({
+          height: 'calc(100vh - 70px)'
+        });
+        $(".chat-message-form").css({
+          bottom: '0px'
+        });
         $(".chat-sidebar").css({
           maxHeight: '100vh'
         });
@@ -2202,11 +2215,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       $(".chat-sidebar").toggle();
 
       if (this.contactsHidden) {
-        $(".chat-content").removeClass("col-8 col-md-10");
+        $(".chat-content").removeClass("col-8 col-lg-10");
         $(".chat-content").addClass("col-12");
       } else {
         $(".chat-content").removeClass("col-12");
-        $(".chat-content").addClass("col-8 col-md-10");
+        $(".chat-content").addClass("col-8 col-lg-10");
       }
     }
   })
@@ -48516,7 +48529,7 @@ var render = function() {
     "div",
     { staticClass: "mt-3" },
     [
-      _c("h4", [_vm._v(_vm._s(_vm.user.portfolio) + " Contacts")]),
+      _c("h4", [_vm._v("Contacts")]),
       _vm._v(" "),
       _c("div", { staticClass: "form-group has-search" }, [
         _c("span", { staticClass: "fa fa-search form-control-feedback" }),
@@ -48590,9 +48603,14 @@ var render = function() {
                 ])
               : _vm._e(),
             _vm._v(" "),
-            _c("div", { staticStyle: { "font-size": ".8em" } }, [
-              _vm._v("\n        " + _vm._s(contact.latest_message) + "\n      ")
-            ])
+            _c("div", {
+              staticStyle: {
+                "font-size": ".8em",
+                "white-space": "nowrap",
+                overflow: "hidden"
+              },
+              domProps: { innerHTML: _vm._s(contact.latest_message) }
+            })
           ]
         )
       })

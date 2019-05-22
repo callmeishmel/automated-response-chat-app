@@ -194,8 +194,12 @@
           this.navbarHidden = !this.navbarHidden;
           $(".navbar-laravel").toggle();
           if(!this.navbarHidden) {
+            $(".chat-messages").css({height: 'calc(100vh - 124px)'});
+            $(".chat-message-form").css({bottom: '55px'});
             $(".chat-sidebar").css({maxHeight: 'calc(100vh - 55px)'});
           } else {
+            $(".chat-messages").css({height: 'calc(100vh - 70px)'});
+            $(".chat-message-form").css({bottom: '0px'});
             $(".chat-sidebar").css({maxHeight: '100vh'});
           }
         },
@@ -204,11 +208,11 @@
           this.contactsHidden = !this.contactsHidden;
           $(".chat-sidebar").toggle();
           if(this.contactsHidden) {
-            $(".chat-content").removeClass("col-8 col-md-10");
+            $(".chat-content").removeClass("col-8 col-lg-10");
             $(".chat-content").addClass("col-12");
           } else {
             $(".chat-content").removeClass("col-12");
-            $(".chat-content").addClass("col-8 col-md-10");
+            $(".chat-content").addClass("col-8 col-lg-10");
           }
         }
     },

@@ -1,7 +1,7 @@
 <template>
   <div class="mt-3">
 
-    <h4>{{ user.portfolio }} Contacts</h4>
+    <h4>Contacts</h4>
 
     <div class="form-group has-search">
       <span class="fa fa-search form-control-feedback"></span>
@@ -39,8 +39,9 @@
           </i>
         </div>
 
-        <div class="" style="font-size: .8em;">
-          {{ contact.latest_message }}
+        <div
+          v-html="contact.latest_message"
+          style="font-size: .8em; white-space: nowrap; overflow: hidden;">
         </div>
 
     </div>
